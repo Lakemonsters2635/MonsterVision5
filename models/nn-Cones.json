@@ -1,0 +1,26 @@
+{
+    "model": {
+        "xml": "Cones.xml",
+        "bin": "Cones.bin"
+    },
+    "nn_config": {
+        "blob": "Conesyolo6t512.blob",
+        "output_format": "detection",
+        "NN_family": "YOLO",
+        "input_size": "512x512",
+        "NN_specific_metadata": {
+            "classes": 1,
+            "coordinates": 4,
+            "anchors": [],
+            "anchor_masks": {},
+            "iou_threshold": 0.5,
+            "confidence_threshold": 0.5
+        }
+    },
+    "mappings": {
+        "labels": [
+            "cone"
+        ]
+    },
+    "version": 1
+}

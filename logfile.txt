@@ -1,0 +1,79 @@
+[2024-05-16 17:50:25.220] [depthai] [debug] Python bindings - version: 2.25.1.0 from  build: 2024-04-22 11:08:54 +0000
+[2024-05-16 17:50:25.220] [depthai] [debug] Library information - version: 2.25.1, commit: c21bdd3746c4ad7134b67c2c75a11fbdd0a01c40 from 2024-04-22 10:57:36 +0200, build: 2024-04-22 10:42:28 +0000, libusb enabled: true
+[2024-05-16 17:50:25.228] [depthai] [debug] Initialize - finished
+[2024-05-16 17:50:25.344] [depthai] [debug] Resources - Archive 'depthai-bootloader-fwp-0.0.27.tar.xz' open: 3ms, archive read: 120ms
+[2024-05-16 17:50:25.739] [host] [debug] Device - OpenVINO version: universal
+[18443010E1176A1200] [1.2] [1715907025.739] [host] [debug] Device - BoardConfig: {"camera":[],"emmc":null,"gpio":[],"imu":null,"logDevicePrints":null,"logPath":null,"logSizeMax":null,"logVerbosity":null,"network":{"mtu":0,"xlinkTcpNoDelay":true},"nonExclusiveMode":false,"pcieInternalClock":null,"sysctl":[],"uart":[],"usb":{"flashBootedPid":63037,"flashBootedVid":999,"manufacturer":"","maxSpeed":4,"pid":63035,"productName":"","vid":999},"usb3PhyInternalClock":null,"uvc":null,"watchdogInitialDelayMs":null,"watchdogTimeoutMs":null} 
+libnop:
+0000: b9 12 b9 07 81 e7 03 81 3b f6 81 e7 03 81 3d f6 04 bd 00 bd 00 b9 02 00 01 ba 00 be be bb 00 bb
+0020: 00 be be be be be be be 00 bb 00 be be
+[2024-05-16 17:50:25.943] [depthai] [debug] Resources - Archive 'depthai-device-fwp-c7127782f2da45aac89d5b5b816d04cc45ae40be.tar.xz' open: 4ms, archive read: 718ms
+[2024-05-16 17:50:27.172] [depthai] [debug] Searching for booted device: DeviceInfo(name=1.2, mxid=18443010E1176A1200, X_LINK_BOOTED, X_LINK_USB_VSC, X_LINK_MYRIAD_X, X_LINK_SUCCESS), name used as hint only
+[18443010E1176A1200] [1.2] [0.839] [system] [info] Memory Usage - DDR: 0.12 / 333.39 MiB, CMX: 2.04 / 2.50 MiB, LeonOS Heap: 7.51 / 82.30 MiB, LeonRT Heap: 2.89 / 40.49 MiB / NOC ddr: 26 MB/s
+[18443010E1176A1200] [1.2] [0.839] [system] [info] Temperatures - Average: 44.70C, CSS: 46.23C, MSS 44.18C, UPA: 43.73C, DSS: 44.64C
+[18443010E1176A1200] [1.2] [0.839] [system] [info] Cpu Usage - LeonOS 67.49%, LeonRT: 1.82%
+[18443010E1176A1200] [1.2] [1715907028.056] [host] [debug] Device about to be closed...
+[18443010E1176A1200] [1.2] [1715907028.059] [host] [debug] Shutdown OK
+[18443010E1176A1200] [1.2] [1715907028.220] [host] [debug] Timesync thread exception caught: Couldn't read data from stream: '__timesync' (X_LINK_ERROR)
+[18443010E1176A1200] [1.2] [1715907028.220] [host] [debug] Log thread exception caught: Couldn't read data from stream: '__log' (X_LINK_ERROR)
+[2024-05-16 17:50:28.740] [depthai] [debug] XLinkResetRemote of linkId: (0)
+[18443010E1176A1200] [1.2] [1715907029.517] [host] [debug] Device closed, 1460
+[2024-05-16 17:50:29.517] [host] [debug] Device - OpenVINO version: universal
+[18443010E1176A1200] [1.2] [1715907029.517] [host] [debug] Device - BoardConfig: {"camera":[],"emmc":null,"gpio":[],"imu":null,"logDevicePrints":null,"logPath":null,"logSizeMax":null,"logVerbosity":null,"network":{"mtu":0,"xlinkTcpNoDelay":true},"nonExclusiveMode":false,"pcieInternalClock":null,"sysctl":[],"uart":[],"usb":{"flashBootedPid":63037,"flashBootedVid":999,"manufacturer":"","maxSpeed":4,"pid":63035,"productName":"","vid":999},"usb3PhyInternalClock":null,"uvc":null,"watchdogInitialDelayMs":null,"watchdogTimeoutMs":null} 
+libnop:
+0000: b9 12 b9 07 81 e7 03 81 3b f6 81 e7 03 81 3d f6 04 bd 00 bd 00 b9 02 00 01 ba 00 be be bb 00 bb
+0020: 00 be be be be be be be 00 bb 00 be be
+[2024-05-16 17:50:30.720] [depthai] [debug] Searching for booted device: DeviceInfo(name=1.2, mxid=18443010E1176A1200, X_LINK_BOOTED, X_LINK_USB_VSC, X_LINK_MYRIAD_X, X_LINK_SUCCESS), name used as hint only
+[18443010E1176A1200] [1.2] [0.893] [system] [info] Memory Usage - DDR: 0.12 / 333.39 MiB, CMX: 2.04 / 2.50 MiB, LeonOS Heap: 7.51 / 82.30 MiB, LeonRT Heap: 2.89 / 40.49 MiB / NOC ddr: 26 MB/s
+[18443010E1176A1200] [1.2] [0.893] [system] [info] Temperatures - Average: 45.15C, CSS: 46.68C, MSS 44.18C, UPA: 44.87C, DSS: 44.87C
+[18443010E1176A1200] [1.2] [0.893] [system] [info] Cpu Usage - LeonOS 71.65%, LeonRT: 1.77%
+[18443010E1176A1200] [1.2] [1715907031.642] [host] [debug] Device about to be closed...
+[18443010E1176A1200] [1.2] [1715907031.646] [host] [debug] Shutdown OK
+[18443010E1176A1200] [1.2] [1715907031.647] [host] [debug] Timesync thread exception caught: Couldn't read data from stream: '__timesync' (X_LINK_ERROR)
+[18443010E1176A1200] [1.2] [1715907031.648] [host] [debug] Log thread exception caught: Couldn't read data from stream: '__log' (X_LINK_ERROR)
+[2024-05-16 17:50:31.648] [depthai] [debug] XLinkResetRemote of linkId: (1)
+[18443010E1176A1200] [1.2] [1715907033.119] [host] [debug] Device closed, 1476
+[2024-05-16 17:50:33.179] [host] [debug] Device - OpenVINO version: 2022.1
+[18443010E1176A1200] [1.2] [1715907033.180] [host] [debug] Device - BoardConfig: {"camera":[],"emmc":null,"gpio":[],"imu":null,"logDevicePrints":null,"logPath":null,"logSizeMax":null,"logVerbosity":null,"network":{"mtu":0,"xlinkTcpNoDelay":true},"nonExclusiveMode":false,"pcieInternalClock":null,"sysctl":[],"uart":[],"usb":{"flashBootedPid":63037,"flashBootedVid":999,"manufacturer":"","maxSpeed":4,"pid":63035,"productName":"","vid":999},"usb3PhyInternalClock":null,"uvc":null,"watchdogInitialDelayMs":null,"watchdogTimeoutMs":null} 
+libnop:
+0000: b9 12 b9 07 81 e7 03 81 3b f6 81 e7 03 81 3d f6 04 bd 00 bd 00 b9 02 00 01 ba 00 be be bb 00 bb
+0020: 00 be be be be be be be 00 bb 00 be be
+[2024-05-16 17:50:34.355] [depthai] [debug] Searching for booted device: DeviceInfo(name=1.2, mxid=18443010E1176A1200, X_LINK_BOOTED, X_LINK_USB_VSC, X_LINK_MYRIAD_X, X_LINK_SUCCESS), name used as hint only
+[18443010E1176A1200] [1.2] [0.814] [system] [info] Memory Usage - DDR: 0.12 / 333.39 MiB, CMX: 2.04 / 2.50 MiB, LeonOS Heap: 7.51 / 82.30 MiB, LeonRT Heap: 2.89 / 40.49 MiB / NOC ddr: 26 MB/s
+[18443010E1176A1200] [1.2] [0.814] [system] [info] Temperatures - Average: 45.32C, CSS: 46.90C, MSS 44.87C, UPA: 44.87C, DSS: 44.64C
+[18443010E1176A1200] [1.2] [0.814] [system] [info] Cpu Usage - LeonOS 72.40%, LeonRT: 1.85%
+[18443010E1176A1200] [1.2] [1715907035.213] [host] [debug] Device about to be closed...
+[18443010E1176A1200] [1.2] [1715907035.215] [host] [debug] Shutdown OK
+[18443010E1176A1200] [1.2] [1715907035.375] [host] [debug] Log thread exception caught: Couldn't read data from stream: '__log' (X_LINK_ERROR)
+[2024-05-16 17:50:35.375] [depthai] [debug] XLinkResetRemote of linkId: (2)
+[18443010E1176A1200] [1.2] [1715907035.375] [host] [debug] Timesync thread exception caught: Couldn't read data from stream: '__timesync' (X_LINK_ERROR)
+[18443010E1176A1200] [1.2] [1715907036.676] [host] [debug] Device closed, 1462
+[2024-05-16 17:50:36.677] [host] [debug] Device - OpenVINO version: 2022.1
+[18443010E1176A1200] [1.2] [1715907036.678] [host] [debug] Device - BoardConfig: {"camera":[],"emmc":null,"gpio":[],"imu":null,"logDevicePrints":null,"logPath":null,"logSizeMax":null,"logVerbosity":null,"network":{"mtu":0,"xlinkTcpNoDelay":true},"nonExclusiveMode":false,"pcieInternalClock":null,"sysctl":[],"uart":[],"usb":{"flashBootedPid":63037,"flashBootedVid":999,"manufacturer":"","maxSpeed":4,"pid":63035,"productName":"","vid":999},"usb3PhyInternalClock":null,"uvc":null,"watchdogInitialDelayMs":null,"watchdogTimeoutMs":null} 
+libnop:
+0000: b9 12 b9 07 81 e7 03 81 3b f6 81 e7 03 81 3d f6 04 bd 00 bd 00 b9 02 00 01 ba 00 be be bb 00 bb
+0020: 00 be be be be be be be 00 bb 00 be be
+[2024-05-16 17:50:37.889] [depthai] [debug] Searching for booted device: DeviceInfo(name=1.2, mxid=18443010E1176A1200, X_LINK_BOOTED, X_LINK_USB_VSC, X_LINK_MYRIAD_X, X_LINK_SUCCESS), name used as hint only
+[18443010E1176A1200] [1.2] [0.866] [system] [info] Memory Usage - DDR: 0.12 / 333.39 MiB, CMX: 2.04 / 2.50 MiB, LeonOS Heap: 7.51 / 82.30 MiB, LeonRT Heap: 2.89 / 40.49 MiB / NOC ddr: 26 MB/s
+[18443010E1176A1200] [1.2] [0.866] [system] [info] Temperatures - Average: 45.55C, CSS: 46.90C, MSS 45.09C, UPA: 45.09C, DSS: 45.09C
+[18443010E1176A1200] [1.2] [0.866] [system] [info] Cpu Usage - LeonOS 71.91%, LeonRT: 1.79%
+===Connected to  18443010E1176A1200
+   >>> MXID: 18443010E1176A1200
+   >>> Num of cameras: 3
+   >>> USB speed: UsbSpeed.SUPER
+   >>> Board name: OAK-D-LITE
+   >>> IR drivers: []
+Camera FPS: 50.0
+Traceback (most recent call last):
+  File "/home/localuser/Luxonis/MV4.5/./MonsterVision4.5.py", line 86, in <module>
+    cam1.startPipeline()
+  File "/home/localuser/Luxonis/MV4.5/CameraPipeline.py", line 276, in startPipeline
+    detectionNNQueue = self.device.getOutputQueue(name="detections", maxSize=4, blocking=False) # Get the NN data from the queue
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Queue for stream name 'detections' doesn't exist
+[18443010E1176A1200] [1.2] [1715907038.787] [host] [debug] Device about to be closed...
+[18443010E1176A1200] [1.2] [1715907038.789] [host] [debug] Shutdown OK
+[18443010E1176A1200] [1.2] [1715907038.954] [host] [debug] Log thread exception caught: Couldn't read data from stream: '__log' (X_LINK_ERROR)
+[18443010E1176A1200] [1.2] [1715907038.955] [host] [debug] Timesync thread exception caught: Couldn't read data from stream: '__timesync' (X_LINK_ERROR)
+[2024-05-16 17:50:39.462] [depthai] [debug] XLinkResetRemote of linkId: (3)
+[18443010E1176A1200] [1.2] [1715907040.261] [host] [debug] Device closed, 1473

@@ -1,0 +1,27 @@
+{
+    "model": {
+        "xml": "mv.xml",
+        "bin": "mv.bin"
+    },
+    "nn_config": {
+    	"blob" : "2022cargo-yolo6.blob",
+        "output_format": "detection",
+        "NN_family": "YOLO",
+        "input_size": "640x640",
+        "NN_specific_metadata": {
+            "classes": 2,
+            "coordinates": 4,
+            "anchors": [],
+            "anchor_masks": {},
+            "iou_threshold": 0.5,
+            "confidence_threshold": 0.5
+        }
+    },
+    "mappings": {
+        "labels": [
+            "blue",
+            "red"
+        ]
+    },
+    "version": 1
+}
