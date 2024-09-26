@@ -179,6 +179,6 @@ class Detections:
 
             objects.append({"objectLabel": self.LABELS[detection.label], "x": x,
                             "y": y, "z": z,
-                            "confidence": round(detection.confidence, 2)})
+                            "confidence": round(detection.confidence, 2), "xa": 0.0,  "ya": 0.0,  "za": 0.0})
 
         return objects            
