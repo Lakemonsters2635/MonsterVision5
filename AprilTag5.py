@@ -79,6 +79,7 @@ class AprilTag:
 
             objects.append({"objectLabel": tagID + ": " + str(detection.getId()), "x": round(pose.X()*METERS_TO_INCHES, 1), "y": round(pose.Y()*METERS_TO_INCHES, 1), "z": round(pose.Z()*METERS_TO_INCHES, 1),
                             "confidence": 1.0, "xa": round(rot.x_degrees, 1), "ya": round(rot.y_degrees, 1), "za": round(rot.z_degrees, 1)})
+            # print("xa: " + str(round(rot.x_degrees, 1)) + ", ya: " + str(round(rot.y_degrees, 1)) + ", za: " + str(round(rot.z_degrees, 1)) + ", z: " + str(round(pose.Z()*METERS_TO_INCHES, 1)));
             # objects.append({"objectLabel": tagID, "x": pose.X()*METERS_TO_INCHES, "y": pose.Y()*METERS_TO_INCHES, "z": pose.Z()*METERS_TO_INCHES,
             #                 "confidence": 1.0, "rotation": {"x": rot.x_degrees, "y": rot.y_degrees, "z": rot.z_degrees}})
             

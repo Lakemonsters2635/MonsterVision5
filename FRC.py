@@ -1,4 +1,5 @@
 # Import libraries
+
 import json
 import sys
 import time
@@ -126,8 +127,10 @@ class FRC:
                 if len(images) > 0: # If there are any images then resize them and put them to the webserver (wpilibpi.local/1181)
                     if len(images) > 1: # If there are more than 1 then stack them together. eg. stack the image with the bonding boxes
                         img = cv2.hconcat(images)
+                        print("Hcat:", (images[i].shape for i in len(images)))
                     else:
                         img = images[0]
+                        # print("One:", images[0].shape)
 
                     dim = (int(img.shape[1] * cm.mvConfig.DS_SCALE) , int(img.shape[0] * cm.mvConfig.DS_SCALE)) # Calculate the correct scale
                     resized = cv2.resize(img, dim) # Resize to the correct scale that we want according to  mv.json

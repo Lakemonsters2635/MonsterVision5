@@ -48,7 +48,7 @@ with contextlib.ExitStack() as stack:
     frc = FRC() # Instantiate an FRC object
     
     deviceInfos = dai.Device.getAllAvailableDevices() # Get all available device info
-
+    
     oakCameras = [] # Create an empty list of cameras
 
     # This section enumerates all connected devices and prints out their information
@@ -96,7 +96,12 @@ with contextlib.ExitStack() as stack:
         # Add the camera to the list of cameras, along with the detectors, etc.
 
         oakCameras.append((cam1, mxId, detector, tagDetector)) # add a tuple of the camera pipeline, cameraID, object detector, and AprilTag detector to the list of cameras
-        
+
+        # Testing values for low frame count
+
+        lowCount = 1
+        allCount = 1
+
     while True:
         cam : camPipe # Type cam to be a camPipe
 
@@ -105,39 +110,43 @@ with contextlib.ExitStack() as stack:
         for (cam, mxId, detector, tagDetector) in oakCameras:
 
             # Process the next frame.  If anything new arrived, processNextFrame will return True
-            try:
-                if cam.processNextFrame():
+            # try:
+            if cam.processNextFrame():
 
-                    # If the camera has a detection object, process the detections
+                # If the camera has a detection object, process the detections
 
-                    objects = []
+                objects = []
 
-                    if detector is not None and cam.detections is not None and len(cam.detections) != 0:
-                        objects = detector.processDetections(cam.detections, cam.frame, cam.depthFrameColor)
+                if detector is not None and cam.detections is not None and len(cam.detections) != 0:
+                    objects = detector.processDetections(cam.detections, cam.frame, cam.depthFrameColor)
 
-                    # If the camera has an AprilTag object, detect any AprilTags that might be seen
+                # If the camera has an AprilTag object, detect any AprilTags that might be seen
 
-                    if tagDetector is not None and cam.frame is not None:
-                        objects.extend(tagDetector.detect(cam.frame, cam.depthFrame))
+                if tagDetector is not None and cam.frame is not None:
+                    objects.extend(tagDetector.detect(cam.frame, cam.depthFrame))
+                    if cam.fps < 16:
+                        lowCount += 1
+                    allCount += 1
+                    print(f"Fps: (same): {cam.fps}")
+                    print(f"Low (MV4.5.py bottom): {lowCount}")
+                    print("Percent Low (same): " + str(lowCount / allCount))
+                    cv2.putText(cam.frame, "fps: {:.2f}".format(cam.fps), (2, cam.frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255))
 
-                        cv2.putText(cam.frame, "fps: {:.2f}".format(cam.fps), (2, cam.frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
-                        (255, 255, 255))
+                res = frc.sd.putString("ObjectTracker-fps", "fps : {:.2f}".format(cam.fps))
+                res = frc.ntinst.flush() # Puts all values onto table immediately
 
-                    res = frc.sd.putString("ObjectTracker-fps", "fps : {:.2f}".format(cam.fps))
-                    res = frc.ntinst.flush() # Puts all values onto table immediately
+                # Display the results to the GUI and push frames to the camera server
 
-                    # Display the results to the GUI and push frames to the camera server
-                    
-                    frc.displayCamResults(cam)
+                frc.displayCamResults(cam)
 
-                    # Write the objects to the Network Table
+                # Write the objects to the Network Table
 
-                    frc.writeObjectsToNetworkTable(objects, cam)
+                frc.writeObjectsToNetworkTable(objects, cam)
 
-                    frc.sendResultsToDS(oakCameras)
-            except Exception as e:
-                print(e)
-                print("Continuing... (we should fix this)")
+                frc.sendResultsToDS(oakCameras)
+            # except Exception as e:
+                # print(e)
+                # print("Continuing... (we should fix this)")
 
         # This won't work in the final version, but it's a way to exit the program
 
