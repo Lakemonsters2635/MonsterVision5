@@ -1,0 +1,71 @@
+    1  sudo apt update
+    2  cd Desktop
+    3  git clone https://github.com/Lakemonsters2635/MonsterVision5
+    4  clear
+    5  sudo apt install snapd
+    6  sudo snap install code --classic
+    7  sudo apt install code
+    8  sudo apt autoremove
+    9  ls
+   10  cd ..
+   11  ls
+   12  cd Desktop/
+   13  git clone https://github.com/Lakemonsters2635/MonsterVision5
+   14  cd MonsterVision5/
+   15  git status
+   16  git config
+   17  git config --list
+   18  cd ..
+   19  clea
+   20  clear
+   21  git pull
+   22  git origin
+   23  git
+   24  git remote show origin
+   25  git config --global user.email "everyone@nospam.com"
+   26  git config --global user.name "everyone"
+   27  git remote show origin
+   28  sudo shutdown
+   29  history
+   30  clear
+   31  sudo apt update
+   32  sudo apt upgrade
+   33  sudo apt autoremoe
+   34  sudo apt autoremove
+   35  sudo reboot
+   36  exit
+   37  pip install depthai opencv-contrib-python ipykernel ipywidgets
+   38  exit
+   39  lsusb
+   40  cd Desktop/MonsterVision5/
+   41  git branch
+   42  ls
+   43  ./MonsterVision4.5.py 
+   44  ls -a
+   45  python3 -m venv env
+   46  source env/bin/activate
+   47  clear
+   48  ls
+   49  rm *.bak
+   50  ls
+   51  exit
+   52  cd Dek
+   53  cd Desktop/
+   54  cd MonsterVision5/
+   55  clear
+   56  source env/bin/activate
+   57  pip lsit
+   58  pip list
+   59  pip install depthai opencv-contrib-python
+   60  pip install robotpy_apriltag
+   61  python3 -m pip install depthai opencv-contrib-python
+   62  python -m pip install robotpy_apriltag
+   63  python -m pip install robotpy-apriltag
+   64  python --version
+   65  pip install robotpy-apriltag
+   66  pip install robotpy
+   67  pip --version
+   68  python -m pip install -U pip
+   69  pip install robotpy
+   70  python3 -m pip install --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple robotpy
+   71  history >> history.txt
