@@ -3,6 +3,7 @@ numpy==2.2.2
 opencv-contrib-python==4.11.0.86
 pyntcore==2024.3.2.1
 robotpy==2024.3.2.2
+robotpy-apriltag==2024.3.2.1
 robotpy-cli==2024.0.0
 robotpy-hal==2024.3.2.1
 robotpy-wpilib-utilities==2024.1.0

@@ -49,23 +49,14 @@
    49  rm *.bak
    50  ls
    51  exit
-   52  cd Dek
-   53  cd Desktop/
-   54  cd MonsterVision5/
-   55  clear
-   56  source env/bin/activate
-   57  pip lsit
-   58  pip list
-   59  pip install depthai opencv-contrib-python
-   60  pip install robotpy_apriltag
-   61  python3 -m pip install depthai opencv-contrib-python
-   62  python -m pip install robotpy_apriltag
-   63  python -m pip install robotpy-apriltag
-   64  python --version
-   65  pip install robotpy-apriltag
-   66  pip install robotpy
-   67  pip --version
-   68  python -m pip install -U pip
-   69  pip install robotpy
-   70  python3 -m pip install --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple robotpy
-   71  history >> history.txt
+   52  /bin/python /home/vision/.vscode/extensions/ms-python.python-2024.22.2-linux-arm64/python_files/printEnvVariablesToFile.py /home/vision/.vscode/extensions/ms-python.python-2024.22.2-linux-arm64/python_files/deactivate/bash/envVars.txt
+   53  pip install matplotlib
+   54  pip list
+   55  ./MonsterVision4.5.py 
+   56  pip install robotpy_apriltag
+   57  pip install robotpy-apriltag
+   58  python3 -m pip install --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple robotpy_apriltag
+   59  pip freeze >> requirements.txt
+   60  history >> history.txt
+   61  pip freeze > requirements.txt
+   62  history > history.txt
