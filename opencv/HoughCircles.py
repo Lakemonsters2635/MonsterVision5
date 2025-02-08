@@ -44,7 +44,7 @@ with dai.Device(pipeline) as device:
         
     # Apply Hough transform on the blurred image. 
         detected_circles = cv2.HoughCircles(gray_blurred,  
-                        cv2.HOUGH_GRADIENT, 1, 400, param1 = 100, 
+                        cv2.HOUGH_GRADIENT, 1, 300, param1 = 100, 
                     param2 = 25, minRadius = 50, maxRadius = 280) 
         
         # Draw circles that are detected. 
@@ -58,9 +58,10 @@ with dai.Device(pipeline) as device:
         
                 # Draw the circumference of the circle. 
                 cv2.circle(frame, (a, b), r, (0, 255, 0), 2) 
-        
+                cv2.circle(gray_blurred, (a, b), r, (255, 255, 255), 2) 
                 # Draw a small circle (of radius 1) to show the center. 
-                cv2.circle(frame, (a, b), 1, (0, 0, 255), 3) 
+                cv2.circle(frame, (a, b), 1, (0, 255, 0), 3) 
+                cv2.circle(gray_blurred, (a, b), 1, (0, 0, 255), 3) 
                 
                 #cv2.imshow("Mask", mask)
         else:
