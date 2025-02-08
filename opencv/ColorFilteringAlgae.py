@@ -1,16 +1,20 @@
 import cv2 
 import numpy as np 
-  
-cap = cv2.VideoCapture(0) 
+
+# detection for webcam
+
+# TODO: test on robot camera (ensure RGB and frame rate values are correct)
+
+cam = cv2.VideoCapture(0) 
   
 while(1): 
-    _, frame = cap.read() 
+    ret, frame = cam.read() 
     # It converts the BGR color space of image to HSV color space 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
       
     # Threshold of blue in HSV space 
-    lower_blue = np.array([27, 58, 50]) 
-    upper_blue = np.array([130, 245, 218]) 
+    lower_blue = np.array([28, 64, 51]) 
+    upper_blue = np.array([130, 245, 195]) 
   
     # preparing the mask to overlay 
     mask = cv2.inRange(hsv, lower_blue, upper_blue) 
@@ -28,4 +32,4 @@ while(1):
         break 
   
 cv2.destroyAllWindows() 
-cap.release() 
+cam.release() 
