@@ -17,15 +17,11 @@ with dai.Device(pipeline) as device:
     qRgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
         
 #cam = cv2.VideoCapture(0)
-#print("yay")
     while True:
         start = time.perf_counter()
         frame = qRgb.get().getFrame()
         #_,frame = cam.read()
-        #print(frame)
-        #frame = cv2.imread('C:\\Users\\prest\\Downloads\\AlgeaDetection-1.png')
-        
-        #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
+       
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
         
         # Threshold of blue in HSV space 
@@ -34,52 +30,45 @@ with dai.Device(pipeline) as device:
     
         # preparing the mask to overlay 
         mask = cv2.inRange(hsv, lower_blue, upper_blue) 
-        blurry_mask = cv2.GaussianBlur(mask, (21,21), 0)
-        # The black region in the mask has the value of 0, 
-        # so when multiplied with original image removes all non-blue regions 
-        #result = cv2.bitwise_and(frame, frame, mask = mask) 
-
-        #gray = cv2.cvtColor(blurry_mask, cv2.COLOR_BGR2GRAY)
-        #mask = cv2.inRange(hsv, lower_blue, upper_blue) 
-        
-
-        #gray_blurred = cv2.blur(gray, (8, 8)) 
-        gray_blurred = blurry_mask 
+        blurry_mask = cv2.GaussianBlur(mask, (21,21), 0) 
         
     # Apply Hough transform on the blurred image. 
-        detected_circles = cv2.HoughCircles(gray_blurred,  
+        detected_circles = cv2.HoughCircles(blurry_mask,  
                         cv2.HOUGH_GRADIENT, 1, 70, param1 = 260, 
                     param2 = 30, minRadius = 50, maxRadius = 280) 
         
-        
-        
         # Draw circles that are detected and the frame rate. 
+        detections = {}
+
         if detected_circles is not None: 
-            print("yay circles")
             # Convert the circle parameters a, b and r to integers. 
             detected_circles = np.uint16(np.around(detected_circles)) 
-        
+            count = 0
             for pt in detected_circles[0, :]: 
-                a, b, r = pt[0], pt[1], pt[2] 
-                # Draw the circumference of the circle. 
-                cv2.circle(frame, (a, b), r, (0, 255, 0), 2)
-                cv2.circle(gray_blurred, (a, b), r, (0, 255, 255), 2) 
-                # Draw a small circle (of radius 1) to show the center. 
-                cv2.circle(frame, (a, b), 1, (0, 255, 0), 3) 
-                cv2.circle(gray_blurred, (a, b), 1, (0, 0, 255), 3) 
+                cx, cy, r = pt[0], pt[1], pt[2] 
+                #detections.update()
+                algea = {}
+                algea["cx"] = int(cx)
+                algea["cy"] = int(cy)
+                algea["r"] = int(r)
                 
-                #cv2.imshow("Mask", mask)
-        else:
-            print("no circles")
+                detections[f"algea{count}"] = algea
+                count += 1
+                # Draw the circumference of the circle. 
+                cv2.circle(frame, (cx, cy), r, (0, 255, 0), 2)
+                cv2.circle(blurry_mask, (cx, cy), r, (0, 255, 255), 2) 
+                # Draw a small circle (of radius 1) to show the center. 
+                cv2.circle(frame, (cx, cy), 1, (0, 255, 0), 3) 
+                cv2.circle(blurry_mask, (cx, cy), 1, (0, 0, 255), 3) 
         #Draw the frame rate onto the frame
         end = time.perf_counter()
         fps = 1/(end-start)
-        cv2.putText(gray_blurred, f"Frame Rate: {int(fps)}",(7,70), cv2.FONT_HERSHEY_SIMPLEX , 3, (255,255,255), 2, cv2.LINE_AA)
+        cv2.putText(blurry_mask, f"Frame Rate: {int(fps)}",(7,70), cv2.FONT_HERSHEY_SIMPLEX , 3, (255,255,255), 2, cv2.LINE_AA)
 
-        cv2.imshow("Detected Circle", frame) 
-        cv2.imshow("Blue", gray_blurred) 
-        cv2.imshow("Mask", blurry_mask) 
+        cv2.imshow("Full Color Detection", frame) 
+        cv2.imshow("Masked Detection", blurry_mask) 
         time.sleep(0.002)
+        print(detections)
         if cv2.waitKey(1) == ord("q"):
             break
 
