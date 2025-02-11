@@ -1,8 +1,9 @@
-# importing open cv
+# For usage with robot external webcam
 import cv2
 import numpy as np
 import depthai as dai
 import time
+
 # Create pipeline
 pipeline = dai.Pipeline()
 cam = pipeline.create(dai.node.ColorCamera)
@@ -20,7 +21,7 @@ with dai.Device(pipeline) as device:
     while True:
         start = time.perf_counter()
         frame = qRgb.get().getFrame()
-        #_,frame = cam.read()
+        #ret, frame = cam.read()
        
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
         
@@ -47,12 +48,12 @@ with dai.Device(pipeline) as device:
             for pt in detected_circles[0, :]: 
                 cx, cy, r = pt[0], pt[1], pt[2] 
                 #detections.update()
-                algea = {}
-                algea["cx"] = int(cx)
-                algea["cy"] = int(cy)
-                algea["r"] = int(r)
+                algae = {}
+                algae["cx"] = int(cx)
+                algae["cy"] = int(cy)
+                algae["r"] = int(r)
                 
-                detections[f"algea{count}"] = algea
+                detections[f"algae{count}"] = algae
                 count += 1
                 # Draw the circumference of the circle. 
                 cv2.circle(frame, (cx, cy), r, (0, 255, 0), 2)
