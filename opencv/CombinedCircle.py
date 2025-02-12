@@ -4,6 +4,8 @@ import numpy as np
 import depthai as dai
 import time
 
+
+
 # Create pipeline
 pipeline = dai.Pipeline()
 cam = pipeline.create(dai.node.ColorCamera)
@@ -22,7 +24,7 @@ with dai.Device(pipeline) as device:
         start = time.perf_counter()
         frame = qRgb.get().getFrame()
         #ret, frame = cam.read()
-       
+    
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
         
         # Threshold of blue in HSV space 
@@ -74,4 +76,3 @@ with dai.Device(pipeline) as device:
             break
 
 cv2.destroyAllWindows()
-#cam.release()
