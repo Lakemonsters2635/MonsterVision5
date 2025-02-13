@@ -1,4 +1,5 @@
 # Import libraries
+
 import json
 import sys
 import time
@@ -16,8 +17,8 @@ except ImportError:
     import ntcore # type: ignore
     usingNTCore = True
 
-import cv2
-import platform
+import cv2 # Import the cv2 image library
+import platform # Import the default package from python that allows you to check system platform info
 
 cscoreAvailable = True
 try:
@@ -46,25 +47,27 @@ class FRC:
         # FPS counting
         self.lastTime = 0
 
+        # Create a NetworkTable Instance
         if usingNTCore:
             self.ntinst = ntcore.NetworkTableInstance.getDefault()
         else:
-            self.ntinst = NetworkTablesInstance.getDefault() # Create a NetworkTable Instance
+            self.ntinst = NetworkTablesInstance.getDefault()
 
         # Sets up the NT depending on config
         if cm.frcConfig.server:
             print("Setting up NetworkTables server")
             self.ntinst.startServer()
-        else:
+        else: # TODO ADRIEN - Look more into what this code below actually does
             print("Setting up NetworkTables client for team {}".format(cm.frcConfig.team))
             self.ntinst.startClient4("Eclipse")        # Name of camera in the network table
             self.ntinst.setServerTeam(cm.frcConfig.team) # How to identify the network table server
             self.ntinst.startDSClient()
 
+        # Get the MonsterVision NT; Maybe creates it
         if usingNTCore:
             self.sd = self.ntinst.getTable("MonsterVision")
         else:
-            self.sd = NetworkTables.getTable("MonsterVision") # Get the MonsterVision NT; Maybe creates it
+            self.sd = NetworkTables.getTable("MonsterVision")
 
         # TODO perhaps width should be function of # of cameras
 
@@ -94,7 +97,7 @@ class FRC:
         res = self.ntinst.flush() # Puts all values onto table immediately
         res = True
 
-
+    # Display windows if you are not running headless
     def displayCamResults(self, cam):
         if not self.onRobot:
             if cam.frame is not None:
@@ -106,26 +109,29 @@ class FRC:
 
 
     # Composite all camera images into a single frame for DS display
-
     def sendResultsToDS(self, cams):
         # First, enumerate the images
 
         if cscoreAvailable:
             self.frame_counter += 1
 
+            # This is so we only send every 4th frame (I think according to mv.json)
             if self.frame_counter % cm.mvConfig.DS_SUBSAMPLING == 0:
-                images = []
+                images = [] # Holds all the different versions of the images like depth and ISP and RGB
+                # for each camera extract the tuple of info
                 for camTuple in cams:
-                    cam = camTuple[0]
-                    if cam.frame is not None:
+                    cam = camTuple[0] # Get cam name
+                    if cam.frame is not None: # If there is a frame append it to the images
                         images.append(cam.frame)
 
-                if len(images) > 0:
-                    if len(images) > 1:
+                if len(images) > 0: # If there are any images then resize them and put them to the webserver (wpilibpi.local/1181)
+                    if len(images) > 1: # If there are more than 1 then stack them together. eg. stack the image with the bonding boxes
                         img = cv2.hconcat(images)
+                        print("Hcat:", (images[i].shape for i in len(images)))
                     else:
                         img = images[0]
+                        # print("One:", images[0].shape)
 
-                    dim = (int(img.shape[1] * cm.mvConfig.DS_SCALE) , int(img.shape[0] * cm.mvConfig.DS_SCALE))
-                    resized = cv2.resize(img, dim)
-                    self.csoutput.putFrame(resized)
+                    dim = (int(img.shape[1] * cm.mvConfig.DS_SCALE) , int(img.shape[0] * cm.mvConfig.DS_SCALE)) # Calculate the correct scale
+                    resized = cv2.resize(img, dim) # Resize to the correct scale that we want according to  mv.json
+                    self.csoutput.putFrame(resized) # Output the frame to the webserver

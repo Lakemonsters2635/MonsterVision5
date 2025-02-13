@@ -9,9 +9,9 @@ import ConfigManager as cm
 scaleFactor = 1     # Scale factor for the image to reduce processing time
 
 
-
 class CameraPipeline:
 
+    # Set up openvino for the NN  
     openvinoVersions = dai.OpenVINO.getVersions()
     openvinoVersionMap = {}
     for v in openvinoVersions:
@@ -342,13 +342,16 @@ class CameraPipeline:
                 match name:
                     case "preview":
                         self.frame = q.get().getCvFrame()
+                        #print("Preview:", self.frame.shape)
                     case "depth":
                         self.depthFrame = q.get().getFrame()
+                        #print("depth")
                         depthChanged = True
                     case "isp":
                         q.get().getCvFrame()            # TODO get rid of this completely
                     case "rgb":
                         self.frame = q.get().getCvFrame()
+                        #print("RGB:", self.frame.shape)
                     case "detectionNN":
                         self.detections = q.get().detections
         

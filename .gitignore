@@ -4,3 +4,7 @@ pipeline_config.json
 NT.py
 changes.zip
 networktables.json
+env
+venv
+.env
+.venv
