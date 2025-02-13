@@ -14,5 +14,5 @@ with dai.Device(pipeline) as device, pyvirtualcam.Camera(width=1280, height=720,
     print("UVC running")
     while True:
         frame = qRgb.get().getFrame()
-        print(frame)
+        #print(frame)
         uvc.send(frame)
