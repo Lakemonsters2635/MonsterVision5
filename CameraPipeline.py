@@ -84,8 +84,8 @@ class CameraPipeline:
 
     def setupSDN(self):
 
-# If no neural network config is given, assume we are depth-only on an OAK-D
-# On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
+        # If no neural network config is given, assume we are depth-only on an OAK-D
+        # On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
 
         if self.NN_FILE is None:
             return None

@@ -18,12 +18,13 @@ except ImportError:
 
 import cv2
 import platform
-
-cscoreAvailable = True
-try:
-    from cscore import CameraServer # type: ignore
-except ImportError:
-    cscoreAvailable = False
+cscoreAvailable = False
+if cm.mvConfig.showPreview:
+    cscoreAvailable = True
+    try:
+        from cscore import CameraServer # type: ignore
+    except ImportError:
+        cscoreAvailable = False
 
 
 
