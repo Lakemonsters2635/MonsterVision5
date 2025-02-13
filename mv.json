@@ -2,7 +2,8 @@
     "cameras" : [
         { "mxid" : "18443010E1176A1200", "name" : "Front", "invert" : 0 },
         { "mxid" : "18443010A162011300", "name" : "Rear", "invert" : 0 },
-        { "mxid" : "1944301001564D1300", "name" : "Eclipse", "invert" : 0 }
+        { "mxid" : "1944301001564D1300", "name" : "Eclipse", "invert" : 0, "monoResolution" : "THE_400_P", "rgbResolution" : "THE_1080_P"},
+        { "mxid" : "14442C1051DCD1D600", "name" : "shripFront", "invert" : 0, "monoResolution" : "THE_400_P", "rgbResolution" : "THE_800_P"}
     ],
     "tagFamily" : "tag36h11",
     "tagSize" : 0.1651,
@@ -10,7 +11,7 @@
     "DS_SUBSAMPLING" : 4,
     "PREVIEW_WIDTH" : 300,
     "PREVIEW_HEIGHT" : 200,
-    "DS_SCALE" : 0.5
-
+    "DS_SCALE" : 0.5,
+    "showPreview" : false
 
 }

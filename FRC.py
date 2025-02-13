@@ -3,7 +3,7 @@
 import json
 import sys
 import time
-
+import numpy as np
 import ConfigManager as cm
 
 
@@ -19,19 +19,20 @@ except ImportError:
 
 import cv2 # Import the cv2 image library
 import platform # Import the default package from python that allows you to check system platform info
-
-cscoreAvailable = True
-try:
-    from cscore import CameraServer # type: ignore
-except ImportError:
-    cscoreAvailable = False
+cscoreAvailable = False
+if cm.mvConfig.showPreview:
+    cscoreAvailable = True # Turn on and off the Camera server
+    try:
+        from cscore import CameraServer # type: ignore
+    except ImportError:
+        cscoreAvailable = False
 
 
 
 class FRC:
 
 
-    def __init__(self):
+    def __init__(self, mxId):
         # Tells you if you are on the robot or not by looking at the platform name (if you are using the WPILib pi image?)
         # onRobot really should be called "headless".  It means there's no graphics capability on the underlying hardware
 
@@ -65,9 +66,9 @@ class FRC:
 
         # Get the MonsterVision NT; Maybe creates it
         if usingNTCore:
-            self.sd = self.ntinst.getTable("MonsterVision")
+            self.sd = self.ntinst.getTable("MonsterVision " + mxId)
         else:
-            self.sd = NetworkTables.getTable("MonsterVision")
+            self.sd = NetworkTables.getTable("MonsterVision " + mxId)
 
         # TODO perhaps width should be function of # of cameras
 
@@ -122,12 +123,18 @@ class FRC:
                 for camTuple in cams:
                     cam = camTuple[0] # Get cam name
                     if cam.frame is not None: # If there is a frame append it to the images
-                        images.append(cam.frame)
-
+                        if cam.frame.shape[0] == 534: # If the camera has the exact height of the global shutter OAK-D PRO
+                            # Pad the frame to match the height of the other OAK-D PRO. These values are HARDCODED!!! Can cause problems later? 1280=widthNormal, 854=widthGlobal, 720=heightNormal, 534=heightGlobal
+                            paddedFrame = np.array(cv2.copyMakeBorder(cam.frame, (720-534)//2, (720-534)//2, (1280-854)//2, (1280-854)//2, cv2.BORDER_CONSTANT, value=[0,0,0]))
+                            images.append(paddedFrame)
+                        else:
+                            images.append(cam.frame)
+                
                 if len(images) > 0: # If there are any images then resize them and put them to the webserver (wpilibpi.local/1181)
                     if len(images) > 1: # If there are more than 1 then stack them together. eg. stack the image with the bonding boxes
+                        # print(len(images), "FUNK TIME")
                         img = cv2.hconcat(images)
-                        print("Hcat:", (images[i].shape for i in len(images)))
+                        # print("Hcat:", (images[i].shape for i in range(len(images))))
                     else:
                         img = images[0]
                         # print("One:", images[0].shape)
