@@ -25,7 +25,7 @@ class Reefscape():
                     param2 = 30, minRadius = 50, maxRadius = 280) 
         
         # Draw circles that are detected and the frame rate. 
-        detections = {}
+        detections = []
 
         if detected_circles is not None: 
             # Convert the circle parameters a, b and r to integers. 
@@ -39,7 +39,7 @@ class Reefscape():
                 algae["cy"] = int(cy)
                 algae["r"] = int(r)
                 
-                detections[f"algae{count}"] = algae
+                detections.append({"objectLabel":"algae" + str(count), "cx":int(cx), "cy":int(cy), "r":int(r)})
                 count += 1
                 # Draw the circumference of the circle. 
                 cv2.circle(frame, (cx, cy), r, (0, 255, 0), 2)

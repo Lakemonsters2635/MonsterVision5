@@ -11,7 +11,7 @@ from Detections import Detections
 from AprilTag5 import AprilTag
 from FRC import FRC
 import ConfigManager as cm
-
+from ReefscapeDetections import Reefscape as Reef
 
 # Prints "interesting" information about the camera
 # and returns the camera intrinsics
@@ -92,10 +92,11 @@ with contextlib.ExitStack() as stack:
 
         detector = Detections(cam1.bbfraction, cam1.LABELS) # Create a detector object for the camera given some device and NN info
         tagDetector = AprilTag(cm.mvConfig.tagFamily, cm.mvConfig.tagSize, cam1.cameraIntrinsics, robotpy_apriltag.AprilTagField.k2024Crescendo) # Create an AprilTag detection object and supply the tag family, size, some camera intrinsics, and a special variable depending on the FRC season
+        algaeDetector = Reef()
 
         # Add the camera to the list of cameras, along with the detectors, etc.
 
-        oakCameras.append((cam1, mxId, detector, tagDetector)) # add a tuple of the camera pipeline, cameraID, object detector, and AprilTag detector to the list of cameras
+        oakCameras.append((cam1, mxId, detector, tagDetector, algaeDetector)) # add a tuple of the camera pipeline, cameraID, object detector, and AprilTag detector to the list of cameras
 
         # Testing values for low frame count
 
@@ -107,7 +108,7 @@ with contextlib.ExitStack() as stack:
 
         # Loop through all the cameras.  For each camera, process the next frame
 
-        for (cam, mxId, detector, tagDetector) in oakCameras:
+        for (cam, mxId, detector, tagDetector, algaeDetector) in oakCameras:
 
             # Process the next frame.  If anything new arrived, processNextFrame will return True
             # try:
@@ -131,6 +132,9 @@ with contextlib.ExitStack() as stack:
                     print(f"Low (MV4.5.py bottom): {lowCount}")
                     print("Percent Low (same): " + str(lowCount / allCount))
                     cv2.putText(cam.frame, "fps: {:.2f}".format(cam.fps), (2, cam.frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255))
+
+                if algaeDetector is not None and cam.frame is not None:
+                    objects.extend(Reef.detect(cam1.frame))
 
                 res = frc.sd.putString("ObjectTracker-fps", "fps : {:.2f}".format(cam.fps))
                 res = frc.ntinst.flush() # Puts all values onto table immediately
