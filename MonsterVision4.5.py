@@ -125,6 +125,11 @@ with contextlib.ExitStack() as stack:
 
                 if tagDetector is not None and cam.frame is not None:
                     objects.extend(tagDetector.detect(cam.frame, cam.depthFrame))
+                    if algaeDetector is not None and cam.frame is not None:
+                        detect = Reef.detect(cam.frame)
+                        objects.extend(detect)
+                        cv2.circle(cam.frame, (detect["cx"], detect["cy"]), detect["r"], (0, 255, 0), 2)
+                        cv2.circle(cam.frame, (detect["cx"], detect["cy"]), 1, (0, 255, 0), 3)
                     if cam.fps < 16:
                         lowCount += 1
                     allCount += 1
@@ -133,9 +138,7 @@ with contextlib.ExitStack() as stack:
                     print("Percent Low (same): " + str(lowCount / allCount))
                     cv2.putText(cam.frame, "fps: {:.2f}".format(cam.fps), (2, cam.frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255, 255, 255))
 
-                if algaeDetector is not None and cam.frame is not None:
-                    objects.extend(Reef.detect(cam1.frame))
-
+                 
                 res = frc.sd.putString("ObjectTracker-fps", "fps : {:.2f}".format(cam.fps))
                 res = frc.ntinst.flush() # Puts all values onto table immediately
 
