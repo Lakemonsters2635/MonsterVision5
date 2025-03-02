@@ -162,6 +162,7 @@ class MVConfig(ConfigManager):
         for cam in self.cameras:
             if cam['mxid'] == mxid:
                 return cam
+        print(f"CAMERA MXID({mxid}) NOT FOUND IN mv.json")
         return None
     
 

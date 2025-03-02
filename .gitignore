@@ -5,3 +5,6 @@ Test.py
 NT.py
 changes.zip
 networktables.json
+*.bak
+models
+models/
