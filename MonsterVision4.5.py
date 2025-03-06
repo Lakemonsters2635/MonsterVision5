@@ -85,7 +85,11 @@ def profile():
 
             # Even if the camera supports depth, you can force it to not use depth
             # Create a camera pipeline object from the camera pipeline class using the name associated with the cameraID in the mv.json file, the camera's info, if we want to use the depth from the camera, and the file associated with the neural network config
+<<<<<<< Updated upstream
             cam1 = camPipe.CameraPipeline(cm.mvConfig.getCamera(mxId)['name'], deviceInfo, useDepth=True, nnFile=None, monoResolution=monoResolution, rgbResolution=rgbResolution) # /boot/nn.json
+=======
+            cam1 = camPipe.CameraPipeline(cm.mvConfig.getCamera(mxId)['name'], deviceInfo, useDepth=True, nnFile="/boot/nn.json", monoResolution=monoResolution, rgbResolution=rgbResolution) # /boot/nn.json
+>>>>>>> Stashed changes
 
             # This is where the camera is set up and the pipeline is built
             # First, create the Spatial Detection Network (SDN) object

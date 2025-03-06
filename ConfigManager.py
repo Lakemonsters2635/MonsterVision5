@@ -123,7 +123,7 @@ class MVConfig(ConfigManager):
 
     __tagFamily = ComputedValue("tag36h11")
     __tagSize = ComputedValue(0.1651)
-    __CAMERA_FPS = ComputedValue(25)
+    __CAMERA_FPS = ComputedValue(50)
     __DS_SUBSAMPLING = ComputedValue(4)
     __PREVIEW_WIDTH = ComputedValue(200)
     __PREVIEW_HEIGHT = ComputedValue(200)

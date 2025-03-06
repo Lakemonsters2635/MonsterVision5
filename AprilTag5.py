@@ -9,6 +9,7 @@ class AprilTag:
     def __init__(self, tagFamily, tagSize, cameraIntrinsics=None, field=None):
         self.detector = robotpy_apriltag.AprilTagDetector()
         self.detector.addFamily(tagFamily)  
+        self.detector.Config.numThreads = 4
         self.tagFamily = tagFamily
 
         self.haveIntrinsics = cameraIntrinsics is not None
@@ -42,10 +43,10 @@ class AprilTag:
 
             pts = np.array([[int(corners[0]), int(corners[1])], [int(corners[2]), int(corners[3])], [int(corners[4]), int(corners[5])], [int(corners[6]), int(corners[7])]], np.int32)
             pts = pts.reshape((-1, 1, 2))
-            cv2.polylines(image, [pts], True, (0, 255, 0), 1)
-            cv2.putText(image, str(detection.getId()), (int(corners[0]), int(corners[1])), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 255, 0))
+            cv2.polylines(image, [pts], True, (255, 0, 255), 1)
+            cv2.putText(image, str(detection.getId()), (int(corners[0]), int(corners[1])), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 0, 255))
             center = detection.getCenter()            
-            cv2.circle(image, (int(center.x), int(center.y)), 5, (0, 255, 0), -1)
+            cv2.circle(image, (int(center.x), int(center.y)), 5, (255, 0, 255), -1)
 
             wd = abs(corners[6]-corners[0])
             ht = abs(corners[3]-corners[1])
@@ -55,7 +56,7 @@ class AprilTag:
             # draw the tag family on the image
             # tagID= '{}: {}'.format(r.tag_family.decode("utf-8"), r.tag_id)
             tagID = self.tagFamily
-            color = (0, 255, 0)
+            color = (255, 0, 255)
 
             if lblY < 75:
                 lblY = 75

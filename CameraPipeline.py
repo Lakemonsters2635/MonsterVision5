@@ -102,7 +102,7 @@ class CameraPipeline:
         if not Path(nnBlobPath).exists():
             import sys
 
-            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
+            raise FileNotFoundError(f'Required file/s not found, please make sure your .blob file is in the models directory and has the same name as listed in /boot/nn.json')
 
         try:
             self.openvinoVersion = nnConfig['openvino_version']
@@ -179,21 +179,30 @@ class CameraPipeline:
 
         self.camRgb = self.pipeline.create(dai.node.ColorCamera)
         self.xoutRgb = self.pipeline.create(dai.node.XLinkOut)
+        # Limit FPS
+        self.xoutRgb.setFpsLimit(cm.mvConfig.CAMERA_FPS)
         self.xoutRgb.setStreamName("rgb")
 
         if self.hasDepth:
             self.monoLeft = self.pipeline.create(dai.node.MonoCamera)
             self.monoRight = self.pipeline.create(dai.node.MonoCamera)
+            # Set camera FPS
+            self.monoLeft.setFps(cm.mvConfig.CAMERA_FPS)
+            self.monoRight.setFps(cm.mvConfig.CAMERA_FPS)
             self.stereo = self.pipeline.create(dai.node.StereoDepth)
             if scaleFactor != 1:
                 # self.ispScaleNode = self.pipeline.create(dai.node.ImageManip)
                 self.depthScaleNode = self.pipeline.create(dai.node.ImageManip)
             self.xoutDepth = self.pipeline.create(dai.node.XLinkOut)
+            # Limit FPS (COULD BREAK THINGS BY FORCING THE SLOW DOWN OF DATA OUTPUT)
+            self.xoutDepth.setFpsLimit(cm.mvConfig.CAMERA_FPS)
             # self.xoutIsp = self.pipeline.create(dai.node.XLinkOut)
             self.xoutDepth.setStreamName("depth")
 
         if spatialDetectionNetwork is not None:
             self.xoutNN = self.pipeline.create(dai.node.XLinkOut)
+            # Limit FPS (COULD BREAK THINGS BY FORCING THE SLOW DOWN OF DATA OUTPUT)
+            self.xoutNN.setFpsLimit(cm.mvConfig.CAMERA_FPS)
             self.xoutNN.setStreamName("detections")
             self.camRgb.setPreviewSize(self.inputSize[0],self.inputSize[1]) # Probably don't need below preview size since now this
 
