@@ -3,7 +3,7 @@ import depthai as dai
 import ConfigManager as cm
 
 
-def _average_depth_coord(pt1, pt2, padding_factor):
+def _average_depth_coord(pt1, pt2, padding_factor): # [xmin, ymin], [xmax, ymax], bbfraction
     factor = 1 - padding_factor
     x_shift = (pt2[0] - pt1[0]) * factor / 2
     y_shift = (pt2[1] - pt1[1]) * factor / 2
@@ -64,7 +64,7 @@ class Detections:
 
             cX = (xmin + xmax) / 2
             cY = (ymin + ymax) / 2
-            R = max((xmax - xmin), (ymax - ymin)) /2
+            R = max((xmax - xmin), (ymax - ymin)) / 2
 
             x1 = xmin
             x2 = xmax
@@ -122,7 +122,7 @@ class Detections:
         # print(s_detections)
 
         for detection in s_detections:
-            if detection.label == 1:
+            if detection.label == 1: # Should assign a random color instead of just 2 options
                 color = (255, 0, 0)
             else:
                 color = (0, 0, 255)
@@ -162,10 +162,10 @@ class Detections:
                                                    [xmax, ymax],
                                                    self.bbfraction)
 
-            cv2.rectangle(frame, avg_pt1, avg_pt2, (0, 255, 255), 1)
+            cv2.rectangle(frame, avg_pt1, avg_pt2, (0, 255, 255), 1) # frame is in BGR
 
-            x = round(int(detection.spatialCoordinates.x * INCHES_PER_MILLIMETER), 1)
-            y = round(int(detection.spatialCoordinates.y * INCHES_PER_MILLIMETER), 1)
+            x = round(int(detection.spatialCoordinates.x * INCHES_PER_MILLIMETER), 1) # Spatial coordinates are in mm
+            y = round(int(detection.spatialCoordinates.y * INCHES_PER_MILLIMETER), 1) 
             z = round(int(detection.spatialCoordinates.z * INCHES_PER_MILLIMETER), 1)
 
             cv2.putText(frame, str(label), (x1 + 10, y1 + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, color)
@@ -177,8 +177,6 @@ class Detections:
 
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), cv2.FONT_HERSHEY_SIMPLEX)
 
-            objects.append({"objectLabel": self.LABELS[detection.label], "x": x,
-                            "y": y, "z": z,
-                            "confidence": round(detection.confidence, 2), "xa": None,  "ya": None,  "za": None}) # Maybe shoudl be 0.0
+            objects.append({"objectLabel": self.LABELS[detection.label], "x": x, "y": y, "z": z, "confidence": round(detection.confidence, 2), "xa": None,  "ya": None,  "za": None}) # Maybe shoudl be 0.0
 
         return objects            
