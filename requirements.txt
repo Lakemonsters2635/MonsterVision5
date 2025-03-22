@@ -1,0 +1,10 @@
+numpy
+robotpy_apriltag
+cv2
+wpimath_geometry
+json
+pathlib
+sys
+time
+depthai
+contextlib
