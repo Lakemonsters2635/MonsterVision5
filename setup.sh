@@ -1,21 +1,15 @@
-# no idea if this works
-"""
-#!/bin/bash 
-# Get the script's directory 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" 
-REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt" 
-# Check if requirements.txt exists 
-if [ ! -f "$REQUIREMENTS_FILE" ]; then 
-    echo "Error: requirements.txt not found in the same directory." 
-    exit 1 
-fi 
-# Install modules using pip 
-echo "Installing modules from requirements.txt..." 
-python3 -m pip install -r "$REQUIREMENTS_FILE" 
-# Check if installation was successful 
-if [ $? -eq 0 ]; then 
-    echo "All modules installed successfully!" 
-else 
-    echo "Failed to install some modules. Check the error messages above." 
-fi
-"""
+#!/bin/bash
+rm -r $HOME/examples
+rm -r $HOME/zips
+sed -i '5c \exec ./MonsterVision5/MonsterVision4.5.py' $HOME/runCamera
+pip install ./deps/* --break-system-packages
+cp ./mv.json /boot/mv.json
+sed -i '16,$c \    "team": '"$1"',\n    "LaserDotProjectorCurrent": 765.0\n}' /boot/frc.json
+sed -i '75c \set linenumbers' /etc/nanorc
+sed -i '98c \set mouse' /etc/nanorc
+sed -i '174c \set tabsize 4' /etc/nanorc
+sed -i '177c \set tabstospaces' /etc/nanorc
+cp ./models/best.json /boot/nn.json
+chmod +x ./MonsterVision4.5.py
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | sudo tee /etc/udev/rules.d/80-movidius.rules
+udevadm control --reload-rules && udevadm trigger

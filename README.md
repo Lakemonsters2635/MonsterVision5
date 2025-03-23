@@ -2,14 +2,28 @@
 
 This should run on RPI5. No testing done on RPI4 yet
 
+## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5
+1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
+1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
+1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases)
+1. Extract downloaded .zip file
+1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
+1. Insert a micro SD card
+1. Select the device you have, "Use Custom" under Operating System, and the micro SD card in Raspberry Pi Imager
+1. Insert SD card into Pi and plug into an Aux port in your radio on the robot (make sure you turn the robot on and give the pi power)
+1. May need to wait 2-5 minutes for pi to boot for the first time
+1. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
+1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
+1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
+1. In the ssh run `tar -xzf MonsterVision5.tar.gz`
+1. Run `rm MonsterVision5.tar.gz`
+1. Run `cd MonsterVision5`
+1. Run `dos2unix *`
+1. Run `sudo sh setup.sh <TEAM NUMBER>`
 
-**TODO: add more notes for nn.json and frc.json**
 
-
-
-
-## How to Set Up MonsterVision4 for Development
-This document covers installing MV4 on a Raspberry Pi development machine. See [here](#How-to-Install-MonsterVision4-for-FRC-Competition) for deployment instructions.
+## How to Set Up MonsterVision5 for Development
+This document covers installing MonsterVision5 on a Raspberry Pi development machine.
 
 It is recommended (but not required) that you use an SSD rather than an SD card on your Pi.  If you do, you may need to enable your Pi to boot from the SSD.  This only needs to be done once.  [Follow these instructions.](https://peyanski.com/how-to-boot-raspberry-pi-4-from-ssd/#:~:text=To%20boot%20Raspberry%20Pi%204%20from%20SSD%20you,USB%20to%20boot%20raspberry%20Pi%204%20from%20SSD.)
 At this time it is important to note that SSDs are not competition legal for FRC.
@@ -55,18 +69,18 @@ cd MonsterVision5
 
 | File | Description |
 | --- | --- |
+| /boot/mv.json | Contains MonsterVision-specific configuration data. |
 | /boot/frc.json | Contains configuration data maintained by the WPILibPi web interface.  There is no need to modify this file manually. |
 | /boot/nn.json | Contains model-specific configuration data for the NN.  Copy this file from the appropriate JSON file found in the `model` direactory. |
-| /boot/mv.json | Contains MonsterVision-specific configuration data. |
 
 ## mv.json
 example of what `mv.json` may look like: 
 ```json
 {
     "cameras" : [
-        { "mxid" : "18443010E1176A1200", "name" : "Front", "invert" : 0 },
-        { "mxid" : "18443010A162011300", "name" : "Rear", "invert" : 0 },
-        { "mxid" : "1944301001564D1300", "name" : "Eclipse", "invert" : 0 }
+        { "mxid" : "18443010E1176A1200", "name" : "Front", "invert" : 0, "monoResolution" : "THE_400_P", "rgbResolution" : "THE_720_P" },
+        { "mxid" : "18443010A162011300", "name" : "Rear", "invert" : 0, "monoResolution" : "THE_400_P", "rgbResolution" : "THE_1080_P" },
+        { "mxid" : "1944301001564D1300", "name" : "Eclipse", "invert" : 0, "monoResolution" : "THE_400_P", "rgbResolution" : "THE_800_P" }
     ],
     "tagFamily" : "tag36h11",
     "tagSize" : 0.1651,
@@ -74,7 +88,7 @@ example of what `mv.json` may look like:
     "DS_SUBSAMPLING" : 4,
     "PREVIEW_WIDTH" : 200,
     "PREVIEW_HEIGHT" : 200,
-    "DS_SCALE" : 0.5
+    "DS_SCALE" : 0.5,
     "showPreview" : true
 }
 ```
@@ -109,11 +123,22 @@ example of what `mv.json` may look like:
 example of what `frc.json` may look like: 
 ```json
 {
-    "cameras": [],
+    "cameras": [
+        {
+            "fps": 30,
+            "height": 120,
+            "name": "rPi Camera 0",
+            "path": "/dev/video0",
+            "pixel format": "mjpeg",
+            "stream": {
+                "properties": []
+            },
+            "width": 160
+        }
+    ],
     "ntmode": "client",
     "switched cameras": [],
     "team": 2635,
-    "hasDisplay": 1,
     "LaserDotProjectorCurrent": 765.0
 }
 ```
@@ -121,14 +146,94 @@ example of what `frc.json` may look like:
 
 |Entry|Values||
 |---|---|---|
+|`cameras`|Standard camera stream thing||
 |`ntmode`|**client**|Network tables server hosted remotely|
 ||**server**|Network tables server hosted locally|
 |`team`|Team number||
 |`hasDisplay`|**0**|Host is headless|
 ||**1**|Host has attached display - depth and annotation windows will be displayed|
-|`LaserDotProjectorCurrent`|Desired Current|This is for an OAK-D Pro and if you don't have one you can remove it. 765 mA is the most efficent value but you can put in any value|
+|`LaserDotProjectorCurrent`|Desired Current|This is for an OAK-D Pro and if you don't have one you can remove it. 765 mA is the most efficent value but you can put in any value (don't go above 1000.0)|
+
+## nn.json
+example of what `nn.json` may look like: 
+```json
+{
+    "model": {
+        "xml": "2025.xml",
+        "bin": "2025.bin"
+    },
+    "nn_config": {
+        "blob": "2025.blob",
+        "output_format": "detection",
+        "NN_family": "YOLO",
+        "input_size": "512x512",
+        "NN_specific_metadata": {
+            "classes": 2,
+            "coordinates": 4,
+            "anchors": [],
+            "anchor_masks": {},
+            "iou_threshold": 0.5,
+            "confidence_threshold": 0.5
+        }
+    },
+    "mappings": {
+        "labels": [
+            "algae",
+            "coral"
+        ]
+    },
+    "version": 1
+}
+```
 
 
+### `model` configures model data.
+
+`model` is a json of file names:
+
+| Field | Description |
+| --- | --- |
+|`xml`| Contains the XML data |
+|`bin`| Contains the bin data |
+
+### `nn_config` configures neural network parameters.
+
+`nn_config` is a json of strings:
+
+| Field | Description |
+| --- | --- |
+|`blob`| Contains the blob file, may need to add manually |
+|`output_format`| Contains the format type of the output |
+|`NN_FAMILY`| Neural network *adrien brain word* |
+|`input_size`| Contains neural network input image dimensions |
+
+### `NN_specific_metadata` contains important metadata.
+
+`NN_specfic_metadata` is a json in `nn_config` that contains integers:
+
+| Field | Description |
+| --- | --- |
+|`classes`| Number of classes to detect |
+|`coordinates`| YOLO-specific parameter |
+|`anchors`| List of YOLO-specific anchors |
+|`anchor_masks`| Json of lists of indices for YOLO masks |
+|`iou_threshold`| Intersection over Union threshold for YOLO masks |
+|`confidence_threshold`| Minimum confidence for output detection |
+
+### `mappings` contains label names.
+`mappings` is a json of a list of labels
+
+| Field | Description |
+| --- | --- |
+|`labels`| A list of class names |
+
+### Remaining fields in `nn.json`
+
+
+
+| Field | Description |
+| --- | --- |
+|`version`| Neural network version number, has no effect |
 
 
 
@@ -143,7 +248,7 @@ example of what `frc.json` may look like:
 
 How to Restart MonsterVision:
 1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and go to Vision Status
-2. Click the red Kill button a few times
+2. Click the red Kill button
 
 IF KILL/TERMINATE doesn't seem to work then you have to go into htop and SIGKILL the main MonsterVision4.5.py:
 1. Open command prompt
@@ -154,7 +259,7 @@ IF KILL/TERMINATE doesn't seem to work then you have to go into htop and SIGKILL
 6. Type `fn+f9` and then '9' to execute the SIGKILL command to kill the process
 7. Hit enter to execute the command
 
-## How to disable Network Adapters (comp)
+## How to Disable Network Adapters for Competition
 Laptop network wifi needs to be disabled for competition. Also secondary ethernet besides the one on the adapter for hardwiring needs to be disabled
 1. Type `windows+r` to open up Windows command Runner
 2. Run `ncpa.cpl`
@@ -162,9 +267,9 @@ Laptop network wifi needs to be disabled for competition. Also secondary etherne
 
 
 ## How to do remote development on Pi
-Create a git repo and have it synced with GitHub
+Create a git repo and have it synced with GitHub.
 
-IF COMMANDS SEEM TO BE NOT WORKING, TRY SUDO OR RUN AS ADMIN
+Commands may need to be ran through `sudo`
 
 ### Edit code through Pi:
 1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
@@ -206,7 +311,7 @@ Assume wpilibpi.local is the server you want to push code to
 5. sudo scp -rp /home/pi/MonsterVision5/. <pc ip address>:c:/dev/MonsterVision5/6. Open VSCode7. Git pull and push as required
 
 
-## How to change model used (works as of 2025):
+## How to change model used
 1. Open command prompt
 2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
 3. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
@@ -215,11 +320,3 @@ Assume wpilibpi.local is the server you want to push code to
 7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
 8. Type `sudo nano /boot/nn.json`
 9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
-
-## How to fix XLINK_DEVICE related errors
-
-1. Flip the supposedly reversible USB C on the camera Y splitter
-
-OR
-
-2.  One of the USB C cables is broken and it is probably the one going from the data terminal of the Y splitter to the pi
