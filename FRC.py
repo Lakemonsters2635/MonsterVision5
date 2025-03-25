@@ -1,5 +1,4 @@
 # Import libraries
-
 import json
 import sys
 import time
@@ -25,6 +24,7 @@ if cm.mvConfig.showPreview:
     try:
         from cscore import CameraServer # type: ignore
     except ImportError:
+        print("Failed to import Camera Server Library (is this expected for you)")
         cscoreAvailable = False
 
 
@@ -37,7 +37,6 @@ class FRC:
         # onRobot really should be called "headless".  It means there's no graphics capability on the underlying hardware
 
         self.onRobot = platform.uname().node == "wpilibpi"
-
 
         # NetworkTable Instance holder; Initialized below
         self.ntinst = None
@@ -75,7 +74,7 @@ class FRC:
         if cscoreAvailable:
             # self.cs = CameraServer.getInstance()
             CameraServer.enableLogging()
-            self.csoutput = CameraServer.putVideo("MonsterVision", cm.mvConfig.PREVIEW_WIDTH, cm.mvConfig.PREVIEW_HEIGHT) # TODOnot        
+            self.csoutput = CameraServer.putVideo("MonsterVision", cm.mvConfig.PREVIEW_WIDTH, cm.mvConfig.PREVIEW_HEIGHT)  
 
 
     # Return True if we're running on Romi.  False if we're a coprocessor on a big 'bot

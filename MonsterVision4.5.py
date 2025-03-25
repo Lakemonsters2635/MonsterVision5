@@ -45,6 +45,7 @@ def printDeviceInfo(devInfo: dai.DeviceInfo):
 
 def profile():
     with contextlib.ExitStack() as stack:
+        frc = FRC() # Instantiate an FRC object
         
         deviceInfos = dai.Device.getAllAvailableDevices() # Get all available device info
         
@@ -54,10 +55,9 @@ def profile():
         # This section enumerates all connected devices and prints out their information
         # It needs to be customized to each year's set of cameras and uses
 
-        def processingFunction(deviceInfo: dai.DeviceInfo):
+        def processingFunction(deviceInfo: dai.DeviceInfo): # Give deviceInfo a type
 
             mxId = deviceInfo.getMxId() # Get the cameraID (mxID) from the deviceInfo
-            frc = FRC(mxId) # Instantiate an FRC object
             cameraIntrinsics = printDeviceInfo(deviceInfo) # Call the function to print out this info
 
             # In this sample code, we connect to every camera we find
@@ -168,8 +168,8 @@ def profile():
 
                 if cv2.waitKey(1) == ord('q'):
                     break
-            with multiprocessing.Pool(len(deviceInfos)) as p:
-                p.map(processingFunction, deviceInfos)
+        with multiprocessing.Pool(len(deviceInfos)) as p:
+            p.map(processingFunction, deviceInfos)
 
 # cProfile.run('profile()', 'stats.prof')
 profile()

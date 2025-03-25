@@ -6,9 +6,9 @@ import wpimath.geometry as geo
 METERS_TO_INCHES = 39.3701
 
 class AprilTag:
-    def __init__(self, tagFamily, tagSize, cameraIntrinsics=None, field=None):
-        self.detector = robotpy_apriltag.AprilTagDetector()
-        self.detector.addFamily(tagFamily)  
+    def __init__(self, tagFamily, tagSize, cameraIntrinsics=None, field=None): # tagSize is in meters
+        self.detector = robotpy_apriltag.AprilTagDetector() # has a num threads prameter
+        self.detector.addFamily(tagFamily)
         self.tagFamily = tagFamily
 
         self.haveIntrinsics = cameraIntrinsics is not None
@@ -18,7 +18,7 @@ class AprilTag:
 
         if (self.haveIntrinsics):
             poseEstConfig = robotpy_apriltag.AprilTagPoseEstimator.Config(
-                tagSize,
+                tagSize,                      # tag size in meters
                 cameraIntrinsics[0][0],       # fx
                 cameraIntrinsics[1][1],       # fy
                 cameraIntrinsics[0][2],       # cx
