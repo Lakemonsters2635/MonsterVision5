@@ -12,6 +12,6 @@
     "PREVIEW_WIDTH" : 300,
     "PREVIEW_HEIGHT" : 200,
     "DS_SCALE" : 0.5,
-    "showPreview" : true
+    "showPreview" : false
 
 }

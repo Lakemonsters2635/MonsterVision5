@@ -1,5 +1,4 @@
 # Import libraries
-
 import json
 import sys
 import time
@@ -33,7 +32,7 @@ if cm.mvConfig.showPreview:
 class FRC:
 
 
-    def __init__(self):
+    def __init__(self, mxId):
         # Tells you if you are on the robot or not by looking at the platform name (if you are using the WPILib pi image?)
         # onRobot really should be called "headless".  It means there's no graphics capability on the underlying hardware
 
@@ -66,9 +65,9 @@ class FRC:
 
         # Get the MonsterVision NT; Maybe creates it
         if usingNTCore:
-            self.sd = self.ntinst.getTable("MonsterVision")
+            self.sd = self.ntinst.getTable("MonsterVision " + mxId)
         else:
-            self.sd = NetworkTables.getTable("MonsterVision")
+            self.sd = NetworkTables.getTable("MonsterVision " + mxId)
 
         # TODO perhaps width should be function of # of cameras
 
@@ -118,7 +117,7 @@ class FRC:
 
             # This is so we only send every 4th frame (I think according to mv.json)
             if self.frame_counter % cm.mvConfig.DS_SUBSAMPLING == 0:
-                images = [] # Holds all the different versions of the images like depth and ISP and RGB(BGR)
+                images = [] # Holds all the different versions of the images like depth and ISP and RGB
                 # for each camera extract the tuple of info
                 for camTuple in cams:
                     cam = camTuple[0] # Get cam name
@@ -132,7 +131,7 @@ class FRC:
                 
                 if len(images) > 0: # If there are any images then resize them and put them to the webserver (wpilibpi.local/1181)
                     if len(images) > 1: # If there are more than 1 then stack them together. eg. stack the image with the bonding boxes
-                        print(len(images), "FUNK TIME")
+                        # print(len(images), "FUNK TIME")
                         img = cv2.hconcat(images)
                         # print("Hcat:", (images[i].shape for i in range(len(images))))
                     else:
