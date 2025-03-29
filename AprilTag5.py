@@ -54,7 +54,7 @@ class AprilTag:
             lblY = int(center.y - ht/2)
             # draw the tag family on the image
             # tagID= '{}: {}'.format(r.tag_family.decode("utf-8"), r.tag_id)
-            tagID = self.tagFamily
+            tagID = str(self.tagFamily) # This will be a string like "tag36h11"
             color = (0, 255, 0)
 
             if lblY < 75:
@@ -77,12 +77,16 @@ class AprilTag:
             cv2.putText(image, f"ZA: {round(rot.z_degrees, 1)} deg", (lblX, lblY + 15), cv2.FONT_HERSHEY_TRIPLEX, 0.5, color)
             # print(f"X: {pose.X()*METERS_TO_INCHES}, Y: {pose.Y()*METERS_TO_INCHES}, Z: {pose.Z()*METERS_TO_INCHES}, XR: {rot.x_degrees}, YR: {rot.y_degrees}, ZR: {rot.z_degrees}")
 
-            objects.append({"objectLabel": tagID + ": " + str(detection.getId()), "x": round(pose.X()*METERS_TO_INCHES, 1), "y": round(pose.Y()*METERS_TO_INCHES, 1), "z": round(pose.Z()*METERS_TO_INCHES, 1),
+            tagNumber: int = detection.getID()
+
+            objects.append({"objectLabel": tagID + ": " + tagNumber, "x": round(pose.X()*METERS_TO_INCHES, 1), "y": round(pose.Y()*METERS_TO_INCHES, 1), "z": round(pose.Z()*METERS_TO_INCHES, 1),
                             "confidence": 1.0, "xa": round(rot.x_degrees, 1), "ya": round(rot.y_degrees, 1), "za": round(rot.z_degrees, 1)})
             # print("xa: " + str(round(rot.x_degrees, 1)) + ", ya: " + str(round(rot.y_degrees, 1)) + ", za: " + str(round(rot.z_degrees, 1)) + ", z: " + str(round(pose.Z()*METERS_TO_INCHES, 1)));
             # objects.append({"objectLabel": tagID, "x": pose.X()*METERS_TO_INCHES, "y": pose.Y()*METERS_TO_INCHES, "z": pose.Z()*METERS_TO_INCHES,
             #                 "confidence": 1.0, "rotation": {"x": rot.x_degrees, "y": rot.y_degrees, "z": rot.z_degrees}})
+    
+        sorted_objects = sorted(objects, key=lambda det: tagNumber + (det.z * 100000))
             
-        return objects
+        return sorted_objects
 
 

@@ -5,20 +5,22 @@ This should run on RPI5. No testing done on RPI4 yet
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5
 1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
 1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
+
 1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases)
 1. Extract downloaded .zip file
 1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
 1. Insert a micro SD card
-1. Select the device you have, "Use Custom" under Operating System, and the micro SD card in Raspberry Pi Imager
+9000. Select the device you have, "Use Custom" under Operating System, and the micro SD card in Raspberry Pi Imager
 1. Insert SD card into Pi and plug into an Aux port in your radio on the robot (make sure you turn the robot on and give the pi power)
 1. May need to wait 2-5 minutes for pi to boot for the first time
-1. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
+3. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
 1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
 1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
 1. In the ssh run `tar -xzf MonsterVision5.tar.gz`
-1. Run `rm MonsterVision5.tar.gz`
 1. Run `cd MonsterVision5`
 1. Run `dos2unix *`
+1. Run `rm MonsterVision5.tar.gz`
+543. Run `sudo sh resize.sh`
 1. Run `sudo sh setup.sh <TEAM NUMBER>`
 
 
@@ -320,3 +322,14 @@ Assume wpilibpi.local is the server you want to push code to
 7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
 8. Type `sudo nano /boot/nn.json`
 9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
+
+
+
+
+
+
+
+
+
+
+

@@ -13,3 +13,4 @@ cp ./models/best.json /boot/nn.json
 chmod +x ./MonsterVision4.5.py
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | sudo tee /etc/udev/rules.d/80-movidius.rules
 udevadm control --reload-rules && udevadm trigger
+rm $HOME/MonsterVision5.tar.gz
