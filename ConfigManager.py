@@ -122,7 +122,7 @@ class NNConfig(ConfigManager):
 class MVConfig(ConfigManager):
 
     __tagFamily = ComputedValue("tag36h11")
-    __tagSize = ComputedValue(0.1651) # meters
+    __tagSize = ComputedValue(0.1651)
     __CAMERA_FPS = ComputedValue(25)
     __DS_SUBSAMPLING = ComputedValue(4)
     __PREVIEW_WIDTH = ComputedValue(200)
@@ -135,7 +135,7 @@ class MVConfig(ConfigManager):
     __table = [
         { "name" : "cameras", "value" : __cameras, "mess" : None},
         { "name" : "tagFamily", "value" : __tagFamily, "mess" : None},
-        { "name" : "tagSize", "value" : __tagSize, "mess" : None}, # meters
+        { "name" : "tagSize", "value" : __tagSize, "mess" : None},
         { "name" : "CAMERA_FPS", "value" : __CAMERA_FPS, "mess" : None},
         { "name" : "DS_SUBSAMPLING", "value" : __DS_SUBSAMPLING, "mess" : None},
         { "name" : "PREVIEW_WIDTH", "value" : __PREVIEW_WIDTH, "mess" : None},
@@ -150,7 +150,7 @@ class MVConfig(ConfigManager):
         if self.success:
             self.cameras = self.__cameras.value
             self.tagFamily = self.__tagFamily.value
-            self.tagSize = self.__tagSize.value # meters
+            self.tagSize = self.__tagSize.value
             self.CAMERA_FPS = self.__CAMERA_FPS.value
             self.DS_SUBSAMPLING = self.__DS_SUBSAMPLING.value
             self.PREVIEW_WIDTH = self.__PREVIEW_WIDTH.value

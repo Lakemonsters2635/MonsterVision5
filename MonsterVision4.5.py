@@ -74,14 +74,14 @@ def profile():
             elif cm.mvConfig.getCamera(mxId)["monoResolution"] == "THE_480_P":
                 monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P
             else:
-                monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P # Defaults for camera sizes
+                monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P
 
             if cm.mvConfig.getCamera(mxId)["rgbResolution"] == "THE_800_P":
                 rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_800_P
             elif cm.mvConfig.getCamera(mxId)["rgbResolution"] == "THE_1080_P":
-                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P #"1080x720"...?
+                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P
             else:
-                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P # Defaults for camera sizes
+                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P
 
             # Even if the camera supports depth, you can force it to not use depth
             # Create a camera pipeline object from the camera pipeline class using the name associated with the cameraID in the mv.json file, the camera's info, if we want to use the depth from the camera, and the file associated with the neural network config
@@ -107,7 +107,7 @@ def profile():
             # Either of the following can be set to None if not needed for a particular camera
 
             detector = Detections(cam1.bbfraction, cam1.LABELS) # Create a detector object for the camera given some device and NN info
-            tagDetector = AprilTag(cm.mvConfig.tagFamily, cm.mvConfig.tagSize, cam1.cameraIntrinsics, robotpy_apriltag.AprilTagField.k2024Crescendo) # Create an AprilTag detection object and supply the tag family, size, some camera intrinsics, and a special variable depending on the FRC season (Remove special variable if it's the wrong season?)
+            tagDetector = AprilTag(cm.mvConfig.tagFamily, cm.mvConfig.tagSize, cam1.cameraIntrinsics, robotpy_apriltag.AprilTagField.k2024Crescendo) # Create an AprilTag detection object and supply the tag family, size, some camera intrinsics, and a special variable depending on the FRC season
 
             # Add the camera to the list of cameras, along with the detectors, etc.
 

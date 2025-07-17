@@ -46,7 +46,7 @@ class CameraPipeline:
 
         self.bbfraction = 0.2 # The size of the inner bounding box as a fraction of the original
 
-        self.NN_FILE = nnFile # "/boot/nn.json"
+        self.NN_FILE = nnFile
         self.LABELS = None
 
         self.pipeline = dai.Pipeline()
@@ -54,6 +54,7 @@ class CameraPipeline:
         self.frame = None
         self.depthFrame = None
         # self.ispFrame = None
+        self.frame = None
         self.detections = None
         self.depthFrameColor = None
         self.cameraIntrinsics = None
@@ -101,7 +102,7 @@ class CameraPipeline:
         if not Path(nnBlobPath).exists():
             import sys
 
-            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"') # CHANGE
+            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
 
         try:
             self.openvinoVersion = nnConfig['openvino_version']
@@ -110,7 +111,7 @@ class CameraPipeline:
 
         if self.openvinoVersion != '':
             self.pipeline.setOpenVINOVersion(self.openvinoVersionMap[self.openvinoVersion])
-        
+
         try:
             self.inputSize = tuple(map(int, nnConfig.get("input_size").split('x')))
         except KeyError:
@@ -152,7 +153,7 @@ class CameraPipeline:
             spatialDetectionNetwork.setConfidenceThreshold(x)
         
         spatialDetectionNetwork.setBlobPath(nnBlobPath)
-        spatialDetectionNetwork.setConfidenceThreshold(0.5) # Why even assign it above if we just set it to 0.5 down here
+        spatialDetectionNetwork.setConfidenceThreshold(0.5)
         spatialDetectionNetwork.input.setBlocking(False)
 
         if self.hasDepth:
