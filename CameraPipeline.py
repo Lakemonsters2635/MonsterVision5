@@ -9,9 +9,9 @@ import ConfigManager as cm
 scaleFactor = 1     # Scale factor for the image to reduce processing time
 
 
-
 class CameraPipeline:
 
+    # Set up openvino for the NN  
     openvinoVersions = dai.OpenVINO.getVersions()
     openvinoVersionMap = {}
     for v in openvinoVersions:
@@ -24,7 +24,7 @@ class CameraPipeline:
     # useDepth: bool             # True: use depth if available, False: use RGB only
     # nnFile: str                # The neural network config file.  None if no NN is to be used
 
-    def __init__(self, name: str, devInfo : dai.DeviceInfo, useDepth : bool, nnFile : str):
+    def __init__(self, name: str, devInfo : dai.DeviceInfo, useDepth : bool, nnFile : str, monoResolution : str, rgbResolution : str):
         self.name = name
         device: dai.Device = dai.Device(devInfo)
         self.devInfo = devInfo
@@ -34,13 +34,13 @@ class CameraPipeline:
         # TODO move these to config file
 
         # We might not have a mono camera, but this cannot hurt
-        self.monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P
-        self.monoWidth = 1280
-        self.monoHeight = 720
+        self.monoResolution = monoResolution
+        # self.monoWidth = 1280 UNNEEDED
+        # self.monoHeight = 720 UNNEEDED
 
-        self.rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P
-        self.rgbWidth = 1920
-        self.rgbHeight = 1080
+        self.rgbResolution = rgbResolution
+        # self.rgbWidth = 1920 UNNEEDED
+        # self.rgbHeight = 1080 UNNEEDED
 
         self.ispScale = (2, 3)
 
@@ -86,7 +86,7 @@ class CameraPipeline:
 
 # If no neural network config is given, assume we are depth-only on an OAK-D
 # On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
-
+        
         if self.NN_FILE is None:
             return None
         
@@ -130,7 +130,7 @@ class CameraPipeline:
         try:
             self.bbfraction = nnConfig['bb_fraction']
         except KeyError:
-            self.bbfraction = self.bbfraction			# No change fromn default
+            self.bbfraction = self.bbfraction			# No change from default
 
 
 
@@ -146,10 +146,10 @@ class CameraPipeline:
             spatialDetectionNetwork.setAnchors(nnConfig['NN_specific_metadata']['anchors'])
             spatialDetectionNetwork.setAnchorMasks(nnConfig['NN_specific_metadata']['anchor_masks'])
             spatialDetectionNetwork.setIouThreshold(nnConfig['NN_specific_metadata']['iou_threshold'])
-            x = nnConfig['NN_specific_metadata']['confidence_threshold']
+            x = nnConfig['NN_specific_metadata']['confidence_threshold'] # why?
             spatialDetectionNetwork.setConfidenceThreshold(x)
         else:
-            x = nnConfig['confidence_threshold']
+            x = nnConfig['confidence_threshold'] # why?
             spatialDetectionNetwork.setConfidenceThreshold(x)
         
         spatialDetectionNetwork.setBlobPath(nnBlobPath)
@@ -195,11 +195,12 @@ class CameraPipeline:
         if spatialDetectionNetwork is not None:
             self.xoutNN = self.pipeline.create(dai.node.XLinkOut)
             self.xoutNN.setStreamName("detections")
-            self.camRgb.setPreviewSize(self.inputSize)
+            self.camRgb.setPreviewSize(self.inputSize[0],self.inputSize[1]) # Probably don't need below preview size since now this
 
         # Properties
 
         self.camRgb.setResolution(self.rgbResolution)
+        # self.camRgb.setPreviewSize(self.inputSize[0], self.inputSize[1]) # Added 1/28/25 because it threw an error (this affects nn input size? why?) (original 640, 640)
         self.camRgb.setInterleaved(False)
         self.camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
         self.camRgb.setFps(cm.mvConfig.CAMERA_FPS)
@@ -240,7 +241,7 @@ class CameraPipeline:
 
 
             if spatialDetectionNetwork is not None:
-                self.camRgb.preview.link(spatialDetectionNetwork.input)
+                self.camRgb.preview.link(spatialDetectionNetwork.input) # Why preview???
                 self.camRgb.isp.link(self.xoutRgb.input)
 
                 spatialDetectionNetwork.out.link(self.xoutNN.input)
@@ -342,13 +343,16 @@ class CameraPipeline:
                 match name:
                     case "preview":
                         self.frame = q.get().getCvFrame()
+                        #print("Preview:", self.frame.shape)
                     case "depth":
                         self.depthFrame = q.get().getFrame()
+                        #print("depth")
                         depthChanged = True
                     case "isp":
                         q.get().getCvFrame()            # TODO get rid of this completely
                     case "rgb":
                         self.frame = q.get().getCvFrame()
+                        #print("RGB:", self.frame.shape)
                     case "detectionNN":
                         self.detections = q.get().detections
         
