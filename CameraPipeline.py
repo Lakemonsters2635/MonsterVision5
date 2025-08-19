@@ -8,18 +8,13 @@ import ConfigManager as cm
 
 scaleFactor = 1     # Scale factor for the image to reduce processing time
 
-
 class CameraPipeline:
-
-    # Set up openvino for the NN  
+    # Set up openvino for the NN
     openvinoVersions = dai.OpenVINO.getVersions()
     openvinoVersionMap = {}
     for v in openvinoVersions:
         openvinoVersionMap[dai.OpenVINO.getVersionName(v)] = v
-
     openvinoVersionMap[""] = dai.OpenVINO.DEFAULT_VERSION
-
-    
     # devInfo: dai.DeviceInfo    # The device info object
     # useDepth: bool             # True: use depth if available, False: use RGB only
     # nnFile: str                # The neural network config file.  None if no NN is to be used
@@ -30,10 +25,9 @@ class CameraPipeline:
         self.devInfo = devInfo
         self.hasDepth = useDepth and len(device.getConnectedCameras()) > 1
         self.hasLaser = len(device.getIrDrivers()) > 0
-        
         # TODO move these to config file
-
         # We might not have a mono camera, but this cannot hurt
+
         self.monoResolution = monoResolution
         # self.monoWidth = 1280 UNNEEDED
         # self.monoHeight = 720 UNNEEDED
@@ -43,25 +37,20 @@ class CameraPipeline:
         # self.rgbHeight = 1080 UNNEEDED
 
         self.ispScale = (2, 3)
-
         self.bbfraction = 0.2 # The size of the inner bounding box as a fraction of the original
-
-        self.NN_FILE = nnFile
+        self.NN_FILE = nnFile # "/boot/nn.json"
         self.LABELS = None
-
         self.pipeline = dai.Pipeline()
-
         self.frame = None
         self.depthFrame = None
         # self.ispFrame = None
-        self.frame = None
         self.detections = None
         self.depthFrameColor = None
         self.cameraIntrinsics = None
         self.calibData = None
 
         return
-    
+
     def parse_error(self, mess):
         """Report parse error."""
         print("config error in '" + self.NN_FILE + "': " + mess, file=sys.stderr)
@@ -73,27 +62,23 @@ class CameraPipeline:
         except OSError as err: # If file doesn't exist then throw an error
             print("could not open '{}': {}".format(self.NN_FILE, err), file=sys.stderr)
             return {}
-
         # top level must be an object
         if not isinstance(j, dict):
             self.parse_error("must be JSON object")
             return {}
-
         return j # Return the config json
 
 
     def setupSDN(self):
-
 # If no neural network config is given, assume we are depth-only on an OAK-D
 # On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
-        
         if self.NN_FILE is None:
             return None
-        
+
         nnJSON = self.read_nn_config()
         self.LABELS = nnJSON['mappings']['labels']
         nnConfig = nnJSON['nn_config']
-    
+
         # Get path to blob
 
         blob = nnConfig['blob']
@@ -102,7 +87,7 @@ class CameraPipeline:
         if not Path(nnBlobPath).exists():
             import sys
 
-            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
+            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"') # CHANGE
 
         try:
             self.openvinoVersion = nnConfig['openvino_version']
@@ -130,9 +115,7 @@ class CameraPipeline:
         try:
             self.bbfraction = nnConfig['bb_fraction']
         except KeyError:
-            self.bbfraction = self.bbfraction			# No change from default
-
-
+            self.bbfraction = self.bbfraction # No change from default
 
         # Create the spatial detection network node - either MobileNet or YOLO (from above)
 
@@ -151,9 +134,9 @@ class CameraPipeline:
         else:
             x = nnConfig['confidence_threshold'] # why?
             spatialDetectionNetwork.setConfidenceThreshold(x)
-        
+
         spatialDetectionNetwork.setBlobPath(nnBlobPath)
-        spatialDetectionNetwork.setConfidenceThreshold(0.5)
+        spatialDetectionNetwork.setConfidenceThreshold(0.5) # Why even assign it above if we just set it to 0.5 down here
         spatialDetectionNetwork.input.setBlocking(False)
 
         if self.hasDepth:
@@ -162,12 +145,10 @@ class CameraPipeline:
             spatialDetectionNetwork.setDepthUpperThreshold(5000)
 
         return spatialDetectionNetwork
-    
-
 
     def buildPipeline(self, spatialDetectionNetwork, invert : bool = False):
 
-        # Linking      
+        # Linking
         try:
             lensPosition = dai.Device(self.devInfo).readCalibration2().getLensPosition(dai.CameraBoardSocket.RGB)
             if lensPosition:
@@ -207,9 +188,9 @@ class CameraPipeline:
         self.camRgb.setIspScale(self.ispScale[0], self.ispScale[1])
 
         if invert:
-            self.camRgb.setImageOrientation(dai.CameraImageOrientation.ROTATE_180_DEG) 
+            self.camRgb.setImageOrientation(dai.CameraImageOrientation.ROTATE_180_DEG)
         else:
-            self.camRgb.setImageOrientation(dai.CameraImageOrientation.NORMAL) 
+            self.camRgb.setImageOrientation(dai.CameraImageOrientation.NORMAL)
 
         print("Camera FPS: {}".format(self.camRgb.getFps()))
 
@@ -275,11 +256,8 @@ class CameraPipeline:
                 spatialDetectionNetwork.out.link(self.xoutNN.input) # Link NN output to the xLink detections output node
 
         self.device = dai.Device(self.pipeline, self.devInfo)
-
         self.cameraIntrinsics = self.device.readCalibration().getCameraIntrinsics(dai.CameraBoardSocket.CAM_A, sizeForIntrinsic[0], sizeForIntrinsic[1])
-        
         return
-    
 
     def serializePipeline(self):
         serialized = self.pipeline.serializeToJson()
@@ -355,13 +333,11 @@ class CameraPipeline:
                         #print("RGB:", self.frame.shape)
                     case "detectionNN":
                         self.detections = q.get().detections
-        
+
         if anyChanges:
             now = time.time_ns() / 1.0e9
             self.fps = int(1/(now - self.lastFrameTime))
             self.lastFrameTime = now
-
-
 
         if depthChanged:
             self.depthFrameColor = cv2.normalize(self.depthFrame, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
@@ -369,4 +345,4 @@ class CameraPipeline:
             self.depthFrameColor = cv2.applyColorMap(self.depthFrameColor, cv2.COLORMAP_RAINBOW)
 
         return anyChanges
-    
+

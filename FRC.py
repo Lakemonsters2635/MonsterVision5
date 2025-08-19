@@ -6,7 +6,6 @@ import time
 import numpy as np
 import ConfigManager as cm
 
-
 usingNTCore = False
 try:
 # Older OSes use pynetworktables
@@ -25,19 +24,17 @@ if cm.mvConfig.showPreview:
     try:
         from cscore import CameraServer # type: ignore
     except ImportError:
+        print("Failed to import Camera Server Library (is this expected for you)")
         cscoreAvailable = False
 
 
-
 class FRC:
-
 
     def __init__(self):
         # Tells you if you are on the robot or not by looking at the platform name (if you are using the WPILib pi image?)
         # onRobot really should be called "headless".  It means there's no graphics capability on the underlying hardware
 
         self.onRobot = platform.uname().node == "wpilibpi"
-
 
         # NetworkTable Instance holder; Initialized below
         self.ntinst = None
@@ -75,8 +72,7 @@ class FRC:
         if cscoreAvailable:
             # self.cs = CameraServer.getInstance()
             CameraServer.enableLogging()
-            self.csoutput = CameraServer.putVideo("MonsterVision", cm.mvConfig.PREVIEW_WIDTH, cm.mvConfig.PREVIEW_HEIGHT) # TODOnot        
-
+            self.csoutput = CameraServer.putVideo("MonsterVision", cm.mvConfig.PREVIEW_WIDTH, cm.mvConfig.PREVIEW_HEIGHT)
 
     # Return True if we're running on Romi.  False if we're a coprocessor on a big 'bot
     # Never used but checks if the files exists
@@ -89,7 +85,6 @@ class FRC:
             print("Could not open '{}': {}".format(cm.ROMI_FILE, err), file=sys.stderr)
             return False
         return True
-
 
     # NT writing for NN detections and AprilTags
     def writeObjectsToNetworkTable(self, objects, cam):
@@ -104,10 +99,9 @@ class FRC:
             if cam.frame is not None:
                 cv2.imshow(cam.name + " rgb", cam.frame)
             # if cam.ispFrame is not None:
-            #     cv2.imshow(cam.name + " ISP", cam.ispFrame) 
+            #     cv2.imshow(cam.name + " ISP", cam.ispFrame)
             if cam.depthFrameColor is not None:
                 cv2.imshow(cam.name + " depth", cam.depthFrameColor)
-
 
     # Composite all camera images into a single frame for DS display
     def sendResultsToDS(self, cams):
@@ -118,7 +112,7 @@ class FRC:
 
             # This is so we only send every 4th frame (I think according to mv.json)
             if self.frame_counter % cm.mvConfig.DS_SUBSAMPLING == 0:
-                images = [] # Holds all the different versions of the images like depth and ISP and RGB
+                images = [] # Holds all the different versions of the images like depth and ISP and RGB(BGR)
                 # for each camera extract the tuple of info
                 for camTuple in cams:
                     cam = camTuple[0] # Get cam name
@@ -129,10 +123,10 @@ class FRC:
                             images.append(paddedFrame)
                         else:
                             images.append(cam.frame)
-                
+
                 if len(images) > 0: # If there are any images then resize them and put them to the webserver (wpilibpi.local/1181)
                     if len(images) > 1: # If there are more than 1 then stack them together. eg. stack the image with the bonding boxes
-                        # print(len(images), "FUNK TIME")
+                        print(len(images), "FUNK TIME")
                         img = cv2.hconcat(images)
                         # print("Hcat:", (images[i].shape for i in range(len(images))))
                     else:

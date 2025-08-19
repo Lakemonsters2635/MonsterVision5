@@ -1,11 +1,8 @@
 # Notes on MonsterVision5 (with common FAQ/troubleshoot issues)
-
 This should run on RPI5. No testing done on RPI4 yet
-
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5
 1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
 1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
-
 1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases)
 1. Extract downloaded .zip file
 1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
@@ -13,7 +10,7 @@ This should run on RPI5. No testing done on RPI4 yet
 9000. Select the device you have, "Use Custom" under Operating System, and the micro SD card in Raspberry Pi Imager
 1. Insert SD card into Pi and plug into an Aux port in your radio on the robot (make sure you turn the robot on and give the pi power)
 1. May need to wait 2-5 minutes for pi to boot for the first time
-3. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
+1. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
 1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
 1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
 1. In the ssh run `tar -xzf MonsterVision5.tar.gz`
@@ -22,16 +19,11 @@ This should run on RPI5. No testing done on RPI4 yet
 1. Run `rm MonsterVision5.tar.gz`
 543. Run `sudo sh resize.sh`
 1. Run `sudo sh setup.sh <TEAM NUMBER>`
-
-
 ## How to Set Up MonsterVision5 for Development
 This document covers installing MonsterVision5 on a Raspberry Pi development machine.
-
 It is recommended (but not required) that you use an SSD rather than an SD card on your Pi.  If you do, you may need to enable your Pi to boot from the SSD.  This only needs to be done once.  [Follow these instructions.](https://peyanski.com/how-to-boot-raspberry-pi-4-from-ssd/#:~:text=To%20boot%20Raspberry%20Pi%204%20from%20SSD%20you,USB%20to%20boot%20raspberry%20Pi%204%20from%20SSD.)
 At this time it is important to note that SSDs are not competition legal for FRC.
-
 Once you've gotten your Pi up and running, follow this procedure:
-
 ### Start with installing Visual Studio Code (which should also install CMake):
 You can skip this step if you just want to install CMake on your own but I haven't tested if that works.
 Visual Studio Code is the preferred development environment for consistency with our general FRC code development.  It is officially distributed via the Raspberry Pi OS APT repository in both 32- and 64-bit versions:  Install via:
@@ -40,43 +32,25 @@ sudo apt update
 sudo apt install code
 ```
 It can be launched with from a terminal via `code` or via the GUI under the **Programming** menu.
-
 ### Start a Terminal session:
 Within the session:
-
 Clone the MonsterVision4 repo:
 ```shell
 git clone https://github.com/Lakemonsters2635/MonsterVision5.git
 ```
-
 For development, it is best to use a Python virtual environment to keep from descending into "version hell."  Create the virtual environment and activate it. This also prevents the package managers from clashing and can make the process of installing smoother
-
 Change to the MonsterVision4 directory:
 ```shell
 cd MonsterVision5
 ```
-
-
-
-
-
-
-
-
-
-
-
-
 ## The various configuration files
-
 | File | Description |
 | --- | --- |
 | /boot/mv.json | Contains MonsterVision-specific configuration data. |
 | /boot/frc.json | Contains configuration data maintained by the WPILibPi web interface.  There is no need to modify this file manually. |
 | /boot/nn.json | Contains model-specific configuration data for the NN.  Copy this file from the appropriate JSON file found in the `model` direactory. |
-
 ## mv.json
-example of what `mv.json` may look like: 
+example of what `mv.json` may look like:
 ```json
 {
     "cameras" : [
@@ -94,11 +68,8 @@ example of what `mv.json` may look like:
     "showPreview" : true
 }
 ```
-
 ### `cameras` configures how a camera is used on the robot.
-
 `cameras` is an array of dictionaries, each containing:
-
 | Field | Description |
 | --- | --- |
 |`mxid`| matches the unique identifier of the OAK camera. |
@@ -106,9 +77,7 @@ example of what `mv.json` may look like:
 |`invert`| specifies that the camera is mounted upside down on the robot |
 |`useDepth`| set to 1 if you want the camera to compute depth using stereo disparity.  Has no effect on April Tag depth calculation. |
 |`nnFile`| Specifies the path to the NN configuration file to be used with this camera. |
-
 ### Remaining fields in `mv.json`
-
 | Field | Description |
 | --- | --- |
 |`tagFamily`| The April Tag family such as `tag36h11` or `tag16h5`|
@@ -119,10 +88,8 @@ example of what `mv.json` may look like:
 |`PREVIEW_HEIGHT`| currently not used. |
 |`DS_SCALE`| another way to reduce bandwidth.  Tha RGB camera image (with annotations) is scaled by this factor before being sent to the drivers station. |
 |`showPreview`| If True, the `preview` output of the RGB camera is sent to an XLinkOut for eventual display on systems running a GUI. |
-
-
 ## frc.json
-example of what `frc.json` may look like: 
+example of what `frc.json` may look like:
 ```json
 {
     "cameras": [
@@ -144,8 +111,6 @@ example of what `frc.json` may look like:
     "LaserDotProjectorCurrent": 765.0
 }
 ```
-
-
 |Entry|Values||
 |---|---|---|
 |`cameras`|Standard camera stream thing||
@@ -155,9 +120,8 @@ example of what `frc.json` may look like:
 |`hasDisplay`|**0**|Host is headless|
 ||**1**|Host has attached display - depth and annotation windows will be displayed|
 |`LaserDotProjectorCurrent`|Desired Current|This is for an OAK-D Pro and if you don't have one you can remove it. 765 mA is the most efficent value but you can put in any value (don't go above 1000.0)|
-
 ## nn.json
-example of what `nn.json` may look like: 
+example of what `nn.json` may look like:
 ```json
 {
     "model": {
@@ -187,32 +151,22 @@ example of what `nn.json` may look like:
     "version": 1
 }
 ```
-
-
 ### `model` configures model data.
-
 `model` is a json of file names:
-
 | Field | Description |
 | --- | --- |
 |`xml`| Contains the XML data |
 |`bin`| Contains the bin data |
-
 ### `nn_config` configures neural network parameters.
-
 `nn_config` is a json of strings:
-
 | Field | Description |
 | --- | --- |
 |`blob`| Contains the blob file, may need to add manually |
 |`output_format`| Contains the format type of the output |
 |`NN_FAMILY`| Neural network *adrien brain word* |
 |`input_size`| Contains neural network input image dimensions |
-
 ### `NN_specific_metadata` contains important metadata.
-
 `NN_specfic_metadata` is a json in `nn_config` that contains integers:
-
 | Field | Description |
 | --- | --- |
 |`classes`| Number of classes to detect |
@@ -221,115 +175,82 @@ example of what `nn.json` may look like:
 |`anchor_masks`| Json of lists of indices for YOLO masks |
 |`iou_threshold`| Intersection over Union threshold for YOLO masks |
 |`confidence_threshold`| Minimum confidence for output detection |
-
 ### `mappings` contains label names.
 `mappings` is a json of a list of labels
-
 | Field | Description |
 | --- | --- |
 |`labels`| A list of class names |
-
 ### Remaining fields in `nn.json`
-
-
-
 | Field | Description |
 | --- | --- |
 |`version`| Neural network version number, has no effect |
-
-
-
-
 ## How to toggle the camera server
 1. Open command prompt
-2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
-3. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
-4. `sudo nano /boot/mv.json`
-5. Change the `'showPreview'` key to `false` or `true` depending on whether or not you need it
-6. Restart MonsterVision
-
+1. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
+1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
+1. `sudo nano /boot/mv.json`
+1. Change the `'showPreview'` key to `false` or `true` depending on whether or not you need it
+1. Restart MonsterVision
 How to Restart MonsterVision:
 1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and go to Vision Status
-2. Click the red Kill button
-
+1. Click the red Kill button
 IF KILL/TERMINATE doesn't seem to work then you have to go into htop and SIGKILL the main MonsterVision4.5.py:
 1. Open command prompt
-2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
-3. Go to [the wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
-4. `htop` in terminal to view all processes
-5. Click on the `python3 ./MonsterVision4.5.py` (should be in green)
-6. Type `fn+f9` and then '9' to execute the SIGKILL command to kill the process
-7. Hit enter to execute the command
-
+1. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
+1. Go to [the wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
+1. `htop` in terminal to view all processes
+1. Click on the `python3 ./MonsterVision4.5.py` (should be in green)
+1. Type `fn+f9` and then '9' to execute the SIGKILL command to kill the process
+1. Hit enter to execute the command
 ## How to Disable Network Adapters for Competition
 Laptop network wifi needs to be disabled for competition. Also secondary ethernet besides the one on the adapter for hardwiring needs to be disabled
 1. Type `windows+r` to open up Windows command Runner
-2. Run `ncpa.cpl`
-3. Disable Wifi and any secondary ethernet connector (likely the highest number adapter)
-
-
+1. Run `ncpa.cpl`
+1. Disable Wifi and any secondary ethernet connector (likely the highest number adapter)
 ## How to do remote development on Pi
 Create a git repo and have it synced with GitHub.
-
 Commands may need to be ran through `sudo`
-
 ### Edit code through Pi:
 1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
-2. Open VSCode
-3. Navigate to Remote Explorer extension on left-hand menu
-4. Make sure the dropdown menu at the top has `Remotes (Tunnels/SSH)` selected
-5. Under `SSH`, select the desired server (probably wpilibpi) and open in current window or new window by clicking on icons next to server name
-6. Enter password multiple times in the top menu bar
-7. Click on the Explorer icon in far top-left corner in VSCode
-8. Enter password (if needed)
-9. Click Open Folder and hit enter to select the default directory (probably /home/pi)
-
-
+1. Open VSCode
+1. Navigate to Remote Explorer extension on left-hand menu
+1. Make sure the dropdown menu at the top has `Remotes (Tunnels/SSH)` selected
+1. Under `SSH`, select the desired server (probably wpilibpi) and open in current window or new window by clicking on icons next to server name
+1. Enter password multiple times in the top menu bar
+1. Click on the Explorer icon in far top-left corner in VSCode
+1. Enter password (if needed)
+1. Click Open Folder and hit enter to select the default directory (probably /home/pi)
 ### How to transfer initial repo from laptop to pi:
 Assume local repo is in c:/dev/MonsterVision5
 Assume /home/pi/MonsterVision5 exists and is empty
 Assume wpilibpi.local is the server you want to push code to
 1. Open Command Prompt
-2. Type `scp -rp c:/dev/MonsterVision5/. pi@wpilibpi.local:/home/pi/MonsterVision5/` (If this doesn't work, use Admin Command Prompt)
-
-
+1. Type `scp -rp c:/dev/MonsterVision5/. pi@wpilibpi.local:/home/pi/MonsterVision5/` (If this doesn't work, use Admin Command Prompt)
 ### How to transfer updated code to computer and GitHub from Pi:
 1. Ensure all saves have been committed on remote server
-2. ssh into remote server
-3. Zip up contents of MonsterVision file using `zip -r <name of zip file to be created> <directory you want to zip>`
-4. Get laptop IP it from `ifconfig` or `ip a` on Linux laptop or `ipconfig` on Windows laptop
-5. From the pi: `scp -p <name zip file> <host user name>@<laptop ip>:<directory where you want it on laptop>`
-6. Unzip on laptop
-7. Copy into MonsterVision5 directory connected to GitHub on laptop (overwriting in the process)
-8. Commit and push to GitHub
-
-
-
+1. ssh into remote server
+1. Zip up contents of MonsterVision file using `zip -r <name of zip file to be created> <directory you want to zip>`
+1. Get laptop IP it from `ifconfig` or `ip a` on Linux laptop or `ipconfig` on Windows laptop
+1. From the pi: `scp -p <name zip file> <host user name>@<laptop ip>:<directory where you want it on laptop>`
+1. Unzip on laptop
+1. Copy into MonsterVision5 directory connected to GitHub on laptop (overwriting in the process)
+1. Commit and push to GitHub
 ### OLD STEPS (for transfer of updated code):
 1. Ensure all saves have been committed on remote server
-2. ssh into remote server
-3. Zip up contents of MonsterVision file using `zip -r <name of zip file to be created> <directory you want to zip>`
-4. Run `ipconfig` on the laptop computer and find the correct ip address (will make more specific later)"legacy command`scp -rp pi@wpilibpi.local:/home/pi/MonsterVision5/. c:/dev/MonsterVision5/`"
-5. sudo scp -rp /home/pi/MonsterVision5/. <pc ip address>:c:/dev/MonsterVision5/6. Open VSCode7. Git pull and push as required
-
-
+1. ssh into remote server
+1. Zip up contents of MonsterVision file using `zip -r <name of zip file to be created> <directory you want to zip>`
+1. Run `ipconfig` on the laptop computer and find the correct ip address (will make more specific later)"legacy command`scp -rp pi@wpilibpi.local:/home/pi/MonsterVision5/. c:/dev/MonsterVision5/`"
+1. sudo scp -rp /home/pi/MonsterVision5/. <pc ip address>:c:/dev/MonsterVision5/6. Open VSCode7. Git pull and push as required
 ## How to change model used
 1. Open command prompt
-2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
-3. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
-4. Type `cd ./<path to MonsterVision>/models`
-6. Type `sudo cp ./<desired model .json file> /boot/nn.json`
-7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
-8. Type `sudo nano /boot/nn.json`
-9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
-
-
-
-
-
-
-
-
-
-
-
+1. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
+1. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
+1. Type `cd ./<path to MonsterVision>/models`
+1. Type `sudo cp ./<desired model .json file> /boot/nn.json`
+1. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
+1. Type `sudo nano /boot/nn.json`
+1. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
+## How to fix XLINK_DEVICE_UNBOOTED (or something like that) error
+2 choices:
+1. Flip the supposedly reversible USB C on the camera Y splitter
+1.  One of the USB C cables is broken and it is probably the one going from the data terminal of the Y splitter to the pi

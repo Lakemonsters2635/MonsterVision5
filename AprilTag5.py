@@ -6,19 +6,17 @@ import wpimath.geometry as geo
 METERS_TO_INCHES = 39.3701
 
 class AprilTag:
-    def __init__(self, tagFamily, tagSize, cameraIntrinsics=None, field=None):
-        self.detector = robotpy_apriltag.AprilTagDetector()
-        self.detector.addFamily(tagFamily)  
+    def __init__(self, tagFamily, tagSize, cameraIntrinsics=None, field=None): # tagSize is in meters
+        self.detector = robotpy_apriltag.AprilTagDetector() # has a num threads prameter
+        self.detector.addFamily(tagFamily)
         self.tagFamily = tagFamily
-
         self.haveIntrinsics = cameraIntrinsics is not None
         self.estimator = None
-
         # Set up Pose Estimator - parameters come from the cameraIntrinsics object
 
         if (self.haveIntrinsics):
             poseEstConfig = robotpy_apriltag.AprilTagPoseEstimator.Config(
-                tagSize,
+                tagSize,                      # tag size in meters
                 cameraIntrinsics[0][0],       # fx
                 cameraIntrinsics[1][1],       # fy
                 cameraIntrinsics[0][2],       # cx
@@ -27,8 +25,7 @@ class AprilTag:
             self.estimator = robotpy_apriltag.AprilTagPoseEstimator(poseEstConfig)
 
         if field is not None:
-            robotpy_apriltag.AprilTagFieldLayout.loadField(field) 
-
+            robotpy_apriltag.AprilTagFieldLayout.loadField(field)
 
     def detect(self, image, depthFrame):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -44,24 +41,21 @@ class AprilTag:
             pts = pts.reshape((-1, 1, 2))
             cv2.polylines(image, [pts], True, (0, 255, 0), 1)
             cv2.putText(image, str(detection.getId()), (int(corners[0]), int(corners[1])), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 255, 0))
-            center = detection.getCenter()            
+            center = detection.getCenter()
             cv2.circle(image, (int(center.x), int(center.y)), 5, (0, 255, 0), -1)
 
             wd = abs(corners[6]-corners[0])
             ht = abs(corners[3]-corners[1])
-
             lblX = int(center.x - wd/2)
             lblY = int(center.y - ht/2)
             # draw the tag family on the image
             # tagID= '{}: {}'.format(r.tag_family.decode("utf-8"), r.tag_id)
             tagID = self.tagFamily
             color = (0, 255, 0)
-
             if lblY < 75:
                 lblY = 75
             if lblY > image.shape[0]:
                 lblY = image.shape[0]
-
             if (self.haveIntrinsics):
                 pose = self.estimator.estimate(detection)
                 rot = pose.rotation()
@@ -82,10 +76,6 @@ class AprilTag:
             # print("xa: " + str(round(rot.x_degrees, 1)) + ", ya: " + str(round(rot.y_degrees, 1)) + ", za: " + str(round(rot.z_degrees, 1)) + ", z: " + str(round(pose.Z()*METERS_TO_INCHES, 1)));
             # objects.append({"objectLabel": tagID, "x": pose.X()*METERS_TO_INCHES, "y": pose.Y()*METERS_TO_INCHES, "z": pose.Z()*METERS_TO_INCHES,
             #                 "confidence": 1.0, "rotation": {"x": rot.x_degrees, "y": rot.y_degrees, "z": rot.z_degrees}})
-            
             # sorted_objects = sorted(objects, key=lambda det: tagBumber + (det.z * 100000))
-
         # return sorted_objects
         return objects
-
-

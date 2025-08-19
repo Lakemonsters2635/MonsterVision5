@@ -6,31 +6,21 @@ FRC_FILE = "/boot/frc.json"     # Some camera settings incuding laser power
 NN_FILE = "/boot/nn.json"       # NN config file
 MV_FILE = "/boot/mv.json"       # MonsterVision Configuration file
 
-
-
-
-
 # The purpase a ComputedValue object is to allow the value to be set in the ConfigManager class
 # and then read in the derived class.  This is a way to get around the fact that Python does not
 # have pointers.  The value in the ComputedValue object is set in the ConfigManager class and then
-# read in the derived class. 
-
+# read in the derived class.
 
 class ComputedValue:
     def __init__(self, value):
         self.value = value
 
 # ConfigManager is a class that reads a JSON file and sets the values of a set of variables
-
 # __init__ takes a file name and a list of dictionaries.
-#
 # Each dictionary has three keys:
 #   name: the name of the variable to set
 #   value: a ComputedValue object that will be set to the value in the JSON file
 #   mess: a ComputedValue object that will be set to a message if the value is not found in the JSON file
-
-
-
 
 class ConfigManager:
 
@@ -43,16 +33,16 @@ class ConfigManager:
                 j = json.load(f)
         except OSError as err:
             raise Exception("could not open '{}': {}".format(self.file, err))
-        
+
         # top level must be an object
         if not isinstance(j, dict):
             raise Exception("must be JSON object")
 
         if drillDown is not None:
             j = j[drillDown]
-        
+
         for entry in configTable:
-       
+
             try:
                 entry['value'].value = j[entry['name']]
             except:
@@ -62,9 +52,7 @@ class ConfigManager:
 
         self.success = True
 
-
 # Derive a new class from ConfigManager
-
 
 class FRCConfig (ConfigManager):
 
@@ -95,7 +83,6 @@ class FRCConfig (ConfigManager):
             self.hasDisplay = self.__hasDisplay.value
             self.LaserDotProjectorCurrent = self.__LaserDotProjectorCurrent.value * 1.0
 
-            
 
 class NNConfig(ConfigManager):
 
@@ -117,12 +104,11 @@ class NNConfig(ConfigManager):
             self.inputSize = tuple(map(int, self.__inputSize.value.split('x')))
             self.NNFamily = self.__NNFamily.value
 
-    
 
 class MVConfig(ConfigManager):
 
     __tagFamily = ComputedValue("tag36h11")
-    __tagSize = ComputedValue(0.1651)
+    __tagSize = ComputedValue(0.1651) # meters
     __CAMERA_FPS = ComputedValue(25)
     __DS_SUBSAMPLING = ComputedValue(4)
     __PREVIEW_WIDTH = ComputedValue(200)
@@ -130,12 +116,10 @@ class MVConfig(ConfigManager):
     __DS_SCALE = ComputedValue(0.5)
     __cameras = ComputedValue([])
     __showPreview = ComputedValue(False)
-
-
     __table = [
         { "name" : "cameras", "value" : __cameras, "mess" : None},
         { "name" : "tagFamily", "value" : __tagFamily, "mess" : None},
-        { "name" : "tagSize", "value" : __tagSize, "mess" : None},
+        { "name" : "tagSize", "value" : __tagSize, "mess" : None}, # meters
         { "name" : "CAMERA_FPS", "value" : __CAMERA_FPS, "mess" : None},
         { "name" : "DS_SUBSAMPLING", "value" : __DS_SUBSAMPLING, "mess" : None},
         { "name" : "PREVIEW_WIDTH", "value" : __PREVIEW_WIDTH, "mess" : None},
@@ -146,11 +130,10 @@ class MVConfig(ConfigManager):
 
     def __init__(self, file: str):
         super().__init__( file, self.__table)
-
         if self.success:
             self.cameras = self.__cameras.value
             self.tagFamily = self.__tagFamily.value
-            self.tagSize = self.__tagSize.value
+            self.tagSize = self.__tagSize.value # meters
             self.CAMERA_FPS = self.__CAMERA_FPS.value
             self.DS_SUBSAMPLING = self.__DS_SUBSAMPLING.value
             self.PREVIEW_WIDTH = self.__PREVIEW_WIDTH.value
@@ -164,7 +147,7 @@ class MVConfig(ConfigManager):
                 return cam
         print(f"CAMERA MXID({mxid}) NOT FOUND IN mv.json")
         return None
-    
+
 
 frcConfig = FRCConfig(FRC_FILE)
 mvConfig = MVConfig(MV_FILE)

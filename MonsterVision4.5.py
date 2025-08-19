@@ -12,7 +12,6 @@ from AprilTag5 import AprilTag
 from FRC import FRC
 import ConfigManager as cm
 
-
 # Prints "interesting" information about the camera
 # and returns the camera intrinsics
 
@@ -39,15 +38,15 @@ def printDeviceInfo(devInfo: dai.DeviceInfo):
         print("   >>> Product name:", eepromData.productName)
     xxx = device.getIrDrivers()
     print("   >>> IR drivers:", xxx)
-
     return
+
 
 def profile():
     with contextlib.ExitStack() as stack:
         frc = FRC() # Instantiate an FRC object
-        
+
         deviceInfos = dai.Device.getAllAvailableDevices() # Get all available device info
-        
+
         oakCameras = [] # Create an empty list of cameras
         print(len(deviceInfos))
 
@@ -68,28 +67,29 @@ def profile():
             # You can have different NN's on each camera (or none)
 
             # Find the correct resolutions for each camera in mv.json
-            
+
             if cm.mvConfig.getCamera(mxId)["monoResolution"] == "THE_400_P":
                 monoResolution = dai.MonoCameraProperties.SensorResolution.THE_400_P
             elif cm.mvConfig.getCamera(mxId)["monoResolution"] == "THE_480_P":
                 monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P
             else:
-                monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P
+                monoResolution = dai.MonoCameraProperties.SensorResolution.THE_480_P # Defaults for camera sizes
 
             if cm.mvConfig.getCamera(mxId)["rgbResolution"] == "THE_800_P":
                 rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_800_P
             elif cm.mvConfig.getCamera(mxId)["rgbResolution"] == "THE_1080_P":
-                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P
+                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P #"1080x720"...?
             else:
-                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P
+                rgbResolution = dai.ColorCameraProperties.SensorResolution.THE_1080_P # Defaults for camera sizes
 
             # Even if the camera supports depth, you can force it to not use depth
-            # Create a camera pipeline object from the camera pipeline class using the name associated with the cameraID in the mv.json file, the camera's info, if we want to use the depth from the camera, and the file associated with the neural network config
+            # Create a camera pipeline object from the camera pipeline class using:
+            # The name associated with the cameraID in the mv.json file, the camera's info, if we want to use the depth from the camera, and the file associated with the neural network config
             cam1 = camPipe.CameraPipeline(cm.mvConfig.getCamera(mxId)['name'], deviceInfo, useDepth=True, nnFile="/boot/nn.json", monoResolution=monoResolution, rgbResolution=rgbResolution) # /boot/nn.json
 
             # This is where the camera is set up and the pipeline is built
             # First, create the Spatial Detection Network (SDN) object
-            
+
             sdn = cam1.setupSDN() # In the camera pipeline call another method to set up the spacial detection network for it given the NN config file and return a spacial detection node
 
             # Now build the pipeline
@@ -107,7 +107,8 @@ def profile():
             # Either of the following can be set to None if not needed for a particular camera
 
             detector = Detections(cam1.bbfraction, cam1.LABELS) # Create a detector object for the camera given some device and NN info
-            tagDetector = AprilTag(cm.mvConfig.tagFamily, cm.mvConfig.tagSize, cam1.cameraIntrinsics, robotpy_apriltag.AprilTagField.k2024Crescendo) # Create an AprilTag detection object and supply the tag family, size, some camera intrinsics, and a special variable depending on the FRC season
+            tagDetector = AprilTag(cm.mvConfig.tagFamily, cm.mvConfig.tagSize, cam1.cameraIntrinsics, robotpy_apriltag.AprilTagField.k2024Crescendo) 
+            # Create an AprilTag detection object and supply the tag family, size, some camera intrinsics, and a special variable depending on the FRC season (Remove special variable if it's the wrong season?)
 
             # Add the camera to the list of cameras, along with the detectors, etc.
 

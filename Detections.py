@@ -2,14 +2,16 @@ import cv2
 import depthai as dai
 import ConfigManager as cm
 
+INCHES_PER_MILLIMETER = 0.0393701
 
-def _average_depth_coord(pt1, pt2, padding_factor):
+def _average_depth_coord(pt1, pt2, padding_factor): # [xmin, ymin], [xmax, ymax], bbfraction
     factor = 1 - padding_factor
     x_shift = (pt2[0] - pt1[0]) * factor / 2
     y_shift = (pt2[1] - pt1[1]) * factor / 2
     av_pt1 = int(pt1[0] + x_shift), int(pt1[1] + y_shift)
     av_pt2 = int(pt2[0] - x_shift), int(pt2[1] - y_shift)
     return av_pt1, av_pt2
+
 
 def mapDetectionCoordinatesToFrame(roi : dai.Rect, inputSize, shape):
     (height, width) = inputSize
@@ -27,15 +29,11 @@ def mapDetectionCoordinatesToFrame(roi : dai.Rect, inputSize, shape):
     return roi
 
 
-
-INCHES_PER_MILLIMETER = 0.0393701
-
 class Detections:
 
     def __init__(self, bbfraction, LABELS):
         self.bbfraction = bbfraction
         self.LABELS = LABELS
-
 
     def ProcessOak1Detections(self, detections, frame):
         height = frame.shape[0]
@@ -48,7 +46,7 @@ class Detections:
             # Get the detection bounding box (in % coordinates), and denormalize it to the NN frame coordinates.
             detectionBB = dai.Rect(dai.Point2f(detection.xmin, detection.ymin), dai.Point2f(detection.xmax, detection.ymax))
             roiDenorm = detectionBB.denormalize(cm.nnConfig.inputSize[0], cm.nnConfig.inputSize[1])
-            
+
             # Now map the denormalized bounding box to the full frame coordinates
             roiMapped = mapDetectionCoordinatesToFrame(roiDenorm, cm.nnConfig.inputSize, frame.shape)
             topLeft = roiMapped.topLeft()
@@ -64,7 +62,7 @@ class Detections:
 
             cX = (xmin + xmax) / 2
             cY = (ymin + ymax) / 2
-            R = max((xmax - xmin), (ymax - ymin)) /2
+            R = max((xmax - xmin), (ymax - ymin)) / 2
 
             x1 = xmin
             x2 = xmax
@@ -100,18 +98,17 @@ class Detections:
                             "y": cY, "z": R,
                             "confidence": round(detection.confidence, 2)})
 
-        return objects                
-
+        return objects
 
     def processDetections(self, detections, frame, depthFrameColor):
 
         if frame is None:
             return
-        
+
         # If no depth info, must be an OAK-1
         if depthFrameColor is None:
             return self.ProcessOak1Detections(detections, frame)
-        
+
         # If the frame is available, draw bounding boxes on it and show the frame
         height = frame.shape[0]
         width = frame.shape[1]
@@ -122,7 +119,7 @@ class Detections:
         # print(s_detections)
 
         for detection in s_detections:
-            if detection.label == 1:
+            if detection.label == 1: # Should assign a random color instead of just 2 options
                 color = (255, 0, 0)
             else:
                 color = (0, 0, 255)
@@ -130,7 +127,7 @@ class Detections:
 # Get the detection bounding box (in % coordinates), and denormalize it to the NN frame coordinates.
             detectionBB = dai.Rect(dai.Point2f(detection.xmin, detection.ymin), dai.Point2f(detection.xmax, detection.ymax))
             roiDenorm = detectionBB.denormalize(cm.nnConfig.inputSize[0], cm.nnConfig.inputSize[1])
-            
+
             # Now map the denormalized bounding box to the full frame coordinates
             roiMapped = mapDetectionCoordinatesToFrame(roiDenorm, cm.nnConfig.inputSize, frame.shape)
             topLeft = roiMapped.topLeft()
@@ -141,7 +138,7 @@ class Detections:
             ymax = int(bottomRight.y)
 
             # And draw the BB rectangle on the frame
-           
+
             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), color, 1)
 
             # Scribbling text on the frame
@@ -162,9 +159,9 @@ class Detections:
                                                    [xmax, ymax],
                                                    self.bbfraction)
 
-            cv2.rectangle(frame, avg_pt1, avg_pt2, (0, 255, 255), 1)
+            cv2.rectangle(frame, avg_pt1, avg_pt2, (0, 255, 255), 1) # frame is in BGR
 
-            x = round(int(detection.spatialCoordinates.x * INCHES_PER_MILLIMETER), 1)
+            x = round(int(detection.spatialCoordinates.x * INCHES_PER_MILLIMETER), 1) # Spatial coordinates are in mm
             y = round(int(detection.spatialCoordinates.y * INCHES_PER_MILLIMETER), 1)
             z = round(int(detection.spatialCoordinates.z * INCHES_PER_MILLIMETER), 1)
 
@@ -177,8 +174,6 @@ class Detections:
 
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), cv2.FONT_HERSHEY_SIMPLEX)
 
-            objects.append({"objectLabel": self.LABELS[detection.label], "x": x,
-                            "y": y, "z": z,
-                            "confidence": round(detection.confidence, 2), "xa": None,  "ya": None,  "za": None}) # Maybe shoudl be 0.0
+            objects.append({"objectLabel": self.LABELS[detection.label], "x": x, "y": y, "z": z, "confidence": round(detection.confidence, 2), "xa": None,  "ya": None,  "za": None}) # Maybe shoudl be 0.0
 
-        return objects            
+        return objects
