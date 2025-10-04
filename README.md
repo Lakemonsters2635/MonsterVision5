@@ -17,9 +17,9 @@ This should run on RPI5. No testing done on RPI4 yet
 1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
 1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
 1. In the ssh run `tar -xzf MonsterVision5.tar.gz`
+1. Run `rm MonsterVision5.tar.gz`
 1. Run `cd MonsterVision5`
 1. Run `dos2unix *`
-1. Run `rm MonsterVision5.tar.gz`
 543. Run `sudo sh resize.sh`
 1. Run `sudo sh setup.sh <TEAM NUMBER>`
 
@@ -44,14 +44,14 @@ It can be launched with from a terminal via `code` or via the GUI under the **Pr
 ### Start a Terminal session:
 Within the session:
 
-Clone the MonsterVision4 repo:
+Clone the MonsterVision5 repo:
 ```shell
 git clone https://github.com/Lakemonsters2635/MonsterVision5.git
 ```
 
 For development, it is best to use a Python virtual environment to keep from descending into "version hell."  Create the virtual environment and activate it. This also prevents the package managers from clashing and can make the process of installing smoother
 
-Change to the MonsterVision4 directory:
+Change to the MonsterVision5 directory:
 ```shell
 cd MonsterVision5
 ```
