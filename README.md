@@ -1,12 +1,13 @@
 # Notes on MonsterVision5 (with common FAQ/troubleshoot issues)
 
 This should run on RPI5. No testing done on RPI4 yet
+note: password for cool computer that we train AIs on is `localuser2635`
 
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5
 1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
 1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
 
-1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases)
+1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases) (scroll down to "Assets" and select WPILibPi)
 1. Extract downloaded .zip file
 1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
 1. Insert a micro SD card
@@ -23,7 +24,7 @@ This should run on RPI5. No testing done on RPI4 yet
 543. Run `sudo sh resize.sh`
 1. Run `sudo sh setup.sh <TEAM NUMBER>`
 
-
+_____________________________________________________________________________________________________________
 ## How to Set Up MonsterVision5 for Development
 This document covers installing MonsterVision5 on a Raspberry Pi development machine.
 
@@ -32,7 +33,7 @@ At this time it is important to note that SSDs are not competition legal for FRC
 
 Once you've gotten your Pi up and running, follow this procedure:
 
-### Start with installing Visual Studio Code (which should also install CMake):
+### 1. Start with installing Visual Studio Code (which should also install CMake):
 You can skip this step if you just want to install CMake on your own but I haven't tested if that works.
 Visual Studio Code is the preferred development environment for consistency with our general FRC code development.  It is officially distributed via the Raspberry Pi OS APT repository in both 32- and 64-bit versions:  Install via:
 ```shell
@@ -41,7 +42,7 @@ sudo apt install code
 ```
 It can be launched with from a terminal via `code` or via the GUI under the **Programming** menu.
 
-### Start a Terminal session:
+### 2. Start a Terminal session:
 Within the session:
 
 Clone the MonsterVision5 repo:
@@ -55,17 +56,7 @@ Change to the MonsterVision5 directory:
 ```shell
 cd MonsterVision5
 ```
-
-
-
-
-
-
-
-
-
-
-
+_____________________________________________________________________________________________________________
 
 ## The various configuration files
 
@@ -238,7 +229,7 @@ example of what `nn.json` may look like:
 |`version`| Neural network version number, has no effect |
 
 
-
+_____________________________________________________________________________________________________________
 
 ## How to toggle the camera server
 1. Open command prompt
@@ -267,7 +258,7 @@ Laptop network wifi needs to be disabled for competition. Also secondary etherne
 2. Run `ncpa.cpl`
 3. Disable Wifi and any secondary ethernet connector (likely the highest number adapter)
 
-
+_____________________________________________________________________________________________________________
 ## How to do remote development on Pi
 Create a git repo and have it synced with GitHub.
 
@@ -312,7 +303,7 @@ Assume wpilibpi.local is the server you want to push code to
 4. Run `ipconfig` on the laptop computer and find the correct ip address (will make more specific later)"legacy command`scp -rp pi@wpilibpi.local:/home/pi/MonsterVision5/. c:/dev/MonsterVision5/`"
 5. sudo scp -rp /home/pi/MonsterVision5/. <pc ip address>:c:/dev/MonsterVision5/6. Open VSCode7. Git pull and push as required
 
-
+_____________________________________________________________________________________________________________
 ## How to change model used
 1. Open command prompt
 2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
