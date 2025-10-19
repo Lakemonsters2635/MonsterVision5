@@ -55,7 +55,8 @@ while True:
     cv2.imshow("Full Color Detection", frame) 
     cv2.imshow("Masked Detection", blurry_mask) 
     time.sleep(0.002)
-    print(detections)
+    if detections:
+        print(detections)
     if cv2.waitKey(1) == ord("q"):
         break
 
