@@ -7,7 +7,7 @@ note: password for cool computer that we train AIs on is `localuser2635`
 1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
 1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
 
-1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases) (scroll down to "Assets" and select WPILibPi)
+1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases) (scroll down to "Assets" and select WPILibPi, not Romi)
 1. Extract downloaded .zip file
 1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
 1. Insert a micro SD card
