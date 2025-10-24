@@ -1,7 +1,6 @@
 # Notes on MonsterVision5 (with common FAQ/troubleshoot issues)
 
 This should run on RPI5. No testing done on RPI4 yet
-note: password for cool computer that we train AIs on is `localuser2635`
 
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5 (FOR SETUP ON ROBOT)
 1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
