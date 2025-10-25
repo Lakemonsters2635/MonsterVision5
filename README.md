@@ -16,15 +16,17 @@ This should run on RPI5. No testing done on RPI4 yet
 1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
 2. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
 1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
-1. In the ssh run `tar -xzf MonsterVision5.tar.gz`
-1. Run `rm MonsterVision5.tar.gz`
-1. Run `cd MonsterVision5`
-1. Run `dos2unix *`
-543. Run `sudo sh resize.sh`
-1. Run `sudo sh setup.sh <TEAM NUMBER>`
-
+1. In the ssh run these commands:
+```shell
+tar -xzf MonsterVision5.tar.gz
+rm MonsterVision5.tar.gz
+cd MonsterVision5
+dos2unix *
+sudo sh resize.sh
+sudo sh setup.sh <TEAM NUMBER>
+```
 _____________________________________________________________________________________________________________
-## How to Set Up MonsterVision5 for Development
+## How to use Pi's for MV Development
 This document covers installing MonsterVision5 on a Raspberry Pi development machine.
 
 It is recommended (but not required) that you use an SSD rather than an SD card on your Pi.  If you do, you may need to enable your Pi to boot from the SSD.  This only needs to be done once.  [Follow these instructions.](https://peyanski.com/how-to-boot-raspberry-pi-4-from-ssd/#:~:text=To%20boot%20Raspberry%20Pi%204%20from%20SSD%20you,USB%20to%20boot%20raspberry%20Pi%204%20from%20SSD.)
@@ -110,7 +112,6 @@ example of what `mv.json` may look like:
 |`DS_SCALE`| another way to reduce bandwidth.  Tha RGB camera image (with annotations) is scaled by this factor before being sent to the drivers station. |
 |`showPreview`| If True, the `preview` output of the RGB camera is sent to an XLinkOut for eventual display on systems running a GUI. |
 
-
 ## frc.json
 example of what `frc.json` may look like: 
 ```json
@@ -134,7 +135,6 @@ example of what `frc.json` may look like:
     "LaserDotProjectorCurrent": 765.0
 }
 ```
-
 
 |Entry|Values||
 |---|---|---|
@@ -178,7 +178,6 @@ example of what `nn.json` may look like:
 }
 ```
 
-
 ### `model` configures model data.
 
 `model` is a json of file names:
@@ -221,12 +220,9 @@ example of what `nn.json` may look like:
 
 ### Remaining fields in `nn.json`
 
-
-
 | Field | Description |
 | --- | --- |
 |`version`| Neural network version number, has no effect |
-
 
 _____________________________________________________________________________________________________________
 
@@ -312,14 +308,3 @@ ________________________________________________________________________________
 7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
 8. Type `sudo nano /boot/nn.json`
 9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
-
-
-
-
-
-
-
-
-
-
-
