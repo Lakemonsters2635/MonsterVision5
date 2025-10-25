@@ -1,6 +1,6 @@
 __pycache__
 *.bak
-# models
 .venv
 ultralytics
-runs
+# This is important if you're not on a mac:
+.DS_Store
