@@ -1,4 +1,4 @@
-# Notes on MonsterVision5 (with common FAQ/troubleshoot issues)
+# MonsterVision Documentation
 
 This should run on RPI5. No testing done on RPI4 yet
 
@@ -254,6 +254,18 @@ Laptop network wifi needs to be disabled for competition. Also secondary etherne
 3. Disable Wifi and any secondary ethernet connector (likely the highest number adapter)
 
 _____________________________________________________________________________________________________________
+## How to change model used
+1. Open command prompt
+2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
+3. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
+4. Type `cd ./<path to MonsterVision>/models`
+6. Type `sudo cp ./<desired model .json file> /boot/nn.json`
+7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
+8. Type `sudo nano /boot/nn.json`
+9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
+
+6 7?
+_____________________________________________________________________________________________________________
 ## How to do remote development on Pi
 Create a git repo and have it synced with GitHub.
 
@@ -289,22 +301,9 @@ Assume wpilibpi.local is the server you want to push code to
 7. Copy into MonsterVision5 directory connected to GitHub on laptop (overwriting in the process)
 8. Commit and push to GitHub
 
-
-
 ### OLD STEPS (for transfer of updated code):
 1. Ensure all saves have been committed on remote server
 2. ssh into remote server
 3. Zip up contents of MonsterVision file using `zip -r <name of zip file to be created> <directory you want to zip>`
 4. Run `ipconfig` on the laptop computer and find the correct ip address (will make more specific later)"legacy command`scp -rp pi@wpilibpi.local:/home/pi/MonsterVision5/. c:/dev/MonsterVision5/`"
 5. sudo scp -rp /home/pi/MonsterVision5/. <pc ip address>:c:/dev/MonsterVision5/6. Open VSCode7. Git pull and push as required
-
-_____________________________________________________________________________________________________________
-## How to change model used
-1. Open command prompt
-2. `ssh pi@wpilibpi` or `ssh pi@wpilibpi.local`
-3. Go to [wpilibpi.local webserver](http://wpilibpi.local/) and change it to writable
-4. Type `cd ./<path to MonsterVision>/models`
-6. Type `sudo cp ./<desired model .json file> /boot/nn.json`
-7. Type `mv ./<latest best.blob> ./<appropriate name for .blob given season>`
-8. Type `sudo nano /boot/nn.json`
-9. Add between lines 6 and 7 (6.5) `"blob": "<chosen appropriate name given season>", `
