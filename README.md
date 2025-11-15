@@ -26,6 +26,11 @@ sudo sh resize.sh
 sudo sh setup.sh <TEAM NUMBER>
 ```
 _____________________________________________________________________________________________________________
+## Illustration for Pi setup on robot:
+<img width="526" height="333" alt="VisionElectricalSetup (1)" src="https://github.com/user-attachments/assets/84e886ce-f4fe-4824-93ad-49ff164bd785" />
+
+
+_____________________________________________________________________________________________________________
 ## How to use Pi's for MV Development
 This document covers installing MonsterVision5 on a Raspberry Pi development machine.
 
