@@ -3,9 +3,7 @@
 This should run on RPI5. No testing done on RPI4 yet
 
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5 (FOR SETUP ON ROBOT)
-1. Run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
-1. Run `tar -czvf MonsterVision5.tar.gz MonsterVision5` (remove the v if verbosity is not desired)
-
+1. Starting on your local machine (NOT THE PI), run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
 1. Download most recent WPILibPi image from [here](https://github.com/wpilibsuite/WPILibPi/releases) (scroll down to "Assets" and select WPILibPi, not Romi)
 1. Extract downloaded .zip file
 1. Download and install Raspberry Pi Imager from [here](https://www.raspberrypi.com/software/)
@@ -13,10 +11,10 @@ This should run on RPI5. No testing done on RPI4 yet
 9000. Select the device you have, "Use Custom" under Operating System, and the micro SD card in Raspberry Pi Imager
 1. Insert SD card into Pi and plug into an Aux port in your radio on the robot (make sure you turn the robot on and give the pi power)
 1. May need to wait 2-5 minutes for pi to boot for the first time
-1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (you may need to run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
+1. ssh into the Raspberry Pi with `ssh pi@wpilibpi.local` (if you get a "man-in-the-middle error, run `ssh-keygen -R wpilibpi.local -f <your known_hosts file path>`)
 2. Navigate to [wpilibpi.local](http://wpilibpi.local) and click "Writable" at the top of the page
 1. Navigate to the "Application" tab on wpilibpi.local and click "choose file" then select your MonsterVision5.tar.gz file and click "Upload" (Do not check extract)
-1. In the ssh run these commands:
+1. In the ssh run these commands (if MV5 is already on there then remove it before proceeding):
 ```shell
 tar -xzf MonsterVision5.tar.gz
 rm MonsterVision5.tar.gz
