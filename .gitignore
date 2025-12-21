@@ -5,3 +5,4 @@ ultralytics
 models/*
 .tmp
 .DS_Store
+uneditedObjects/*
