@@ -6,12 +6,11 @@ import cv2
 import depthai as dai
 import ConfigManager as cm
 
-scaleFactor = 1     # Scale factor for the image to reduce processing time
+scaleFactor = 1  # Scale factor for the image to reduce processing time
 
 
 class CameraPipeline:
-
-    # Set up openvino for the NN  
+    # Set up openvino for the NN
     openvinoVersions = dai.OpenVINO.getVersions()
     openvinoVersionMap = {}
     for v in openvinoVersions:
@@ -19,18 +18,31 @@ class CameraPipeline:
 
     openvinoVersionMap[""] = dai.OpenVINO.DEFAULT_VERSION
 
-    
     # devInfo: dai.DeviceInfo    # The device info object
     # useDepth: bool             # True: use depth if available, False: use RGB only
     # nnFile: str                # The neural network config file.  None if no NN is to be used
 
-    def __init__(self, name: str, devInfo : dai.DeviceInfo, useDepth : bool, nnFile : str, monoResolution : str, rgbResolution : str):
+    def __init__(
+        self,
+        name: str,
+        devInfo: dai.DeviceInfo,
+        useDepth: bool,
+        nnFile: str,
+        monoResolution: str,
+        rgbResolution: str,
+    ):
         self.name = name
-        device: dai.Device = dai.Device(devInfo)
         self.devInfo = devInfo
-        self.hasDepth = useDepth and len(device.getConnectedCameras()) > 1
-        self.hasLaser = len(device.getIrDrivers()) > 0
-        
+
+        try:
+            with dai.Device(devInfo) as _dev:
+                self.hasDepth = useDepth and len(_dev.getConnectedCameras()) > 1
+                self.hasLaser = len(_dev.getIrDrivers()) > 0
+        except Exception:
+            # Fallback if device can't be opened
+            self.hasDepth = useDepth
+            self.hasLaser = False
+
         # TODO move these to config file
 
         # We might not have a mono camera, but this cannot hurt
@@ -44,7 +56,7 @@ class CameraPipeline:
 
         self.ispScale = (2, 3)
 
-        self.bbfraction = 0.2 # The size of the inner bounding box as a fraction of the original
+        self.bbfraction = 0.2  # The size of the inner bounding box as a fraction of the original
 
         self.NN_FILE = nnFile
         self.LABELS = None
@@ -61,16 +73,16 @@ class CameraPipeline:
         self.calibData = None
 
         return
-    
+
     def parse_error(self, mess):
         """Report parse error."""
         print("config error in '" + self.NN_FILE + "': " + mess, file=sys.stderr)
 
     def read_nn_config(self):
-        try: # Try to open the NN config file
+        try:  # Try to open the NN config file
             with open(self.NN_FILE, "rt", encoding="utf-8") as f:
-                j = json.load(f) # Load in json format
-        except OSError as err: # If file doesn't exist then throw an error
+                j = json.load(f)  # Load in json format
+        except OSError as err:  # If file doesn't exist then throw an error
             print("could not open '{}': {}".format(self.NN_FILE, err), file=sys.stderr)
             return {}
 
@@ -79,60 +91,67 @@ class CameraPipeline:
             self.parse_error("must be JSON object")
             return {}
 
-        return j # Return the config json
-
+        return j  # Return the config json
 
     def setupSDN(self):
 
-# If no neural network config is given, assume we are depth-only on an OAK-D
-# On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
-        
+        # If no neural network config is given, assume we are depth-only on an OAK-D
+        # On an OAK-1, I guess this means we're using an overly-expensive webcam :-)
+
         if self.NN_FILE is None:
             return None
-        
+
         nnJSON = self.read_nn_config()
-        self.LABELS = nnJSON['mappings']['labels']
-        nnConfig = nnJSON['nn_config']
-    
+        self.LABELS = nnJSON["mappings"]["labels"]
+        nnConfig = nnJSON["nn_config"]
+
         # Get path to blob
 
-        blob = nnConfig['blob']
-        nnBlobPath = str((Path(__file__).parent / Path('models/' + blob)).resolve().absolute())
+        blob = nnConfig["blob"]
+        nnBlobPath = str(
+            (Path(__file__).parent / Path("models/" + blob)).resolve().absolute()
+        )
 
         if not Path(nnBlobPath).exists():
             import sys
 
-            raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
+            raise FileNotFoundError(
+                f'Required file/s not found, please run "{sys.executable} install_requirements.py"'
+            )
 
         try:
-            self.openvinoVersion = nnConfig['openvino_version']
+            self.openvinoVersion = nnConfig["openvino_version"]
         except KeyError:
-            self.openvinoVersion = ''
+            self.openvinoVersion = ""
 
-        if self.openvinoVersion != '':
-            self.pipeline.setOpenVINOVersion(self.openvinoVersionMap[self.openvinoVersion])
+        if self.openvinoVersion != "":
+            self.pipeline.setOpenVINOVersion(
+                self.openvinoVersionMap[self.openvinoVersion]
+            )
 
         try:
-            self.inputSize = tuple(map(int, nnConfig.get("input_size").split('x')))
+            self.inputSize = tuple(map(int, nnConfig.get("input_size").split("x")))
         except KeyError:
             self.inputSize = (300, 300)
 
-        family = nnConfig['NN_family']
-        if family == 'mobilenet':
-            if self.hasDepth: detectionNodeType = dai.node.MobileNetSpatialDetectionNetwork
-            else: detectionNodeType = dai.node.MobileNetDetectionNetwork
-        elif family == 'YOLO':
-            if self.hasDepth: detectionNodeType = dai.node.YoloSpatialDetectionNetwork
-            else: detectionNodeType = dai.node.YoloDetectionNetwork
+        family = nnConfig["NN_family"]
+        if family == "mobilenet":
+            if self.hasDepth:
+                detectionNodeType = dai.node.MobileNetSpatialDetectionNetwork
+            else:
+                detectionNodeType = dai.node.MobileNetDetectionNetwork
+        elif family == "YOLO":
+            if self.hasDepth:
+                detectionNodeType = dai.node.YoloSpatialDetectionNetwork
+            else:
+                detectionNodeType = dai.node.YoloDetectionNetwork
         else:
-            raise Exception(f'Unknown NN_family: {family}')
+            raise Exception(f"Unknown NN_family: {family}")
 
         try:
-            self.bbfraction = nnConfig['bb_fraction']
+            self.bbfraction = nnConfig["bb_fraction"]
         except KeyError:
-            self.bbfraction = self.bbfraction			# No change from default
-
-
+            self.bbfraction = self.bbfraction  # No change from default
 
         # Create the spatial detection network node - either MobileNet or YOLO (from above)
 
@@ -140,18 +159,28 @@ class CameraPipeline:
 
         # Set the NN-specific stuff
 
-        if family == 'YOLO':
-            spatialDetectionNetwork.setNumClasses(nnConfig['NN_specific_metadata']['classes'])
-            spatialDetectionNetwork.setCoordinateSize(nnConfig['NN_specific_metadata']['coordinates'])
-            spatialDetectionNetwork.setAnchors(nnConfig['NN_specific_metadata']['anchors'])
-            spatialDetectionNetwork.setAnchorMasks(nnConfig['NN_specific_metadata']['anchor_masks'])
-            spatialDetectionNetwork.setIouThreshold(nnConfig['NN_specific_metadata']['iou_threshold'])
-            x = nnConfig['NN_specific_metadata']['confidence_threshold'] # why?
+        if family == "YOLO":
+            spatialDetectionNetwork.setNumClasses(
+                nnConfig["NN_specific_metadata"]["classes"]
+            )
+            spatialDetectionNetwork.setCoordinateSize(
+                nnConfig["NN_specific_metadata"]["coordinates"]
+            )
+            spatialDetectionNetwork.setAnchors(
+                nnConfig["NN_specific_metadata"]["anchors"]
+            )
+            spatialDetectionNetwork.setAnchorMasks(
+                nnConfig["NN_specific_metadata"]["anchor_masks"]
+            )
+            spatialDetectionNetwork.setIouThreshold(
+                nnConfig["NN_specific_metadata"]["iou_threshold"]
+            )
+            x = nnConfig["NN_specific_metadata"]["confidence_threshold"]  # why?
             spatialDetectionNetwork.setConfidenceThreshold(x)
         else:
-            x = nnConfig['confidence_threshold'] # why?
+            x = nnConfig["confidence_threshold"]  # why?
             spatialDetectionNetwork.setConfidenceThreshold(x)
-        
+
         spatialDetectionNetwork.setBlobPath(nnBlobPath)
         spatialDetectionNetwork.setConfidenceThreshold(0.5)
         spatialDetectionNetwork.input.setBlocking(False)
@@ -162,43 +191,26 @@ class CameraPipeline:
             spatialDetectionNetwork.setDepthUpperThreshold(5000)
 
         return spatialDetectionNetwork
-    
 
+    def buildPipeline(self, spatialDetectionNetwork, invert: bool = False):
 
-    def buildPipeline(self, spatialDetectionNetwork, invert : bool = False):
+        # V3 update: removed explicit xlinking of nodes
+        self.spatialDetectionNetwork = spatialDetectionNetwork
 
-        # Linking      
-        try:
-            lensPosition = dai.Device(self.devInfo).readCalibration2().getLensPosition(dai.CameraBoardSocket.RGB)
-            if lensPosition:
-                self.camRgb.initialControl.setManualFocus(lensPosition)
-        except:
-            pass
-
-        # Define sources and outputs
-
+        # ColorCamera is still used in v3, however suggested to not use and instead just use `Camera` instead TODO
         self.camRgb = self.pipeline.create(dai.node.ColorCamera)
-        self.xoutRgb = self.pipeline.create(dai.node.XLinkOut)
-        self.xoutRgb.setStreamName("rgb")
 
         if self.hasDepth:
             self.monoLeft = self.pipeline.create(dai.node.MonoCamera)
             self.monoRight = self.pipeline.create(dai.node.MonoCamera)
             self.stereo = self.pipeline.create(dai.node.StereoDepth)
             if scaleFactor != 1:
-                # self.ispScaleNode = self.pipeline.create(dai.node.ImageManip)
                 self.depthScaleNode = self.pipeline.create(dai.node.ImageManip)
-            self.xoutDepth = self.pipeline.create(dai.node.XLinkOut)
-            # self.xoutIsp = self.pipeline.create(dai.node.XLinkOut)
-            self.xoutDepth.setStreamName("depth")
 
         if spatialDetectionNetwork is not None:
-            self.xoutNN = self.pipeline.create(dai.node.XLinkOut)
-            self.xoutNN.setStreamName("detections")
-            self.camRgb.setPreviewSize(self.inputSize[0],self.inputSize[1]) # Probably don't need below preview size since now this
+            self.camRgb.setPreviewSize(self.inputSize[0], self.inputSize[1])
 
         # Properties
-
         self.camRgb.setResolution(self.rgbResolution)
         # self.camRgb.setPreviewSize(self.inputSize[0], self.inputSize[1]) # Added 1/28/25 because it threw an error (this affects nn input size? why?) (original 640, 640)
         self.camRgb.setInterleaved(False)
@@ -207,9 +219,9 @@ class CameraPipeline:
         self.camRgb.setIspScale(self.ispScale[0], self.ispScale[1])
 
         if invert:
-            self.camRgb.setImageOrientation(dai.CameraImageOrientation.ROTATE_180_DEG) 
+            self.camRgb.setImageOrientation(dai.CameraImageOrientation.ROTATE_180_DEG)
         else:
-            self.camRgb.setImageOrientation(dai.CameraImageOrientation.NORMAL) 
+            self.camRgb.setImageOrientation(dai.CameraImageOrientation.NORMAL)
 
         print("Camera FPS: {}".format(self.camRgb.getFps()))
 
@@ -221,17 +233,23 @@ class CameraPipeline:
 
             # Setting node configs
 
-            self.stereo.setDefaultProfilePreset(dai.node.StereoDepth.PresetMode.HIGH_DENSITY)
+            self.stereo.setDefaultProfilePreset(
+                dai.node.StereoDepth.PresetMode.HIGH_DENSITY
+            )
             self.stereo.setLeftRightCheck(True)
             self.stereo.setDepthAlign(dai.CameraBoardSocket.RGB)
-            self.stereo.setOutputSize(self.monoLeft.getResolutionWidth(), self.monoLeft.getResolutionHeight())
+            self.stereo.setOutputSize(
+                self.monoLeft.getResolutionWidth(), self.monoLeft.getResolutionHeight()
+            )
 
             if scaleFactor != 1:
                 w = self.monoLeft.getResolutionWidth()
                 h = self.monoLeft.getResolutionHeight()
 
-                self.ispScaleNode.setResize(int(w/scaleFactor), int(h/scaleFactor))
-                self.depthScaleNode.setResize(int(w/scaleFactor), int(h/scaleFactor))
+                self.ispScaleNode.setResize(int(w / scaleFactor), int(h / scaleFactor))
+                self.depthScaleNode.setResize(
+                    int(w / scaleFactor), int(h / scaleFactor)
+                )
 
             # Linking
 
@@ -239,47 +257,33 @@ class CameraPipeline:
             self.monoRight.out.link(self.stereo.right)
             sizeForIntrinsic = self.camRgb.getIspSize()
 
-
             if spatialDetectionNetwork is not None:
-                self.camRgb.preview.link(spatialDetectionNetwork.input) # Why preview???
-                self.camRgb.isp.link(self.xoutRgb.input)
-
-                spatialDetectionNetwork.out.link(self.xoutNN.input)
-
+                self.camRgb.preview.link(spatialDetectionNetwork.input)
                 self.stereo.depth.link(spatialDetectionNetwork.inputDepth)
 
-                if scaleFactor == 1:
-                    spatialDetectionNetwork.passthroughDepth.link(self.xoutDepth.input)
-                    # self.camRgb.isp.link(self.xoutIsp.input)
-                else:
-                    # self.camRgb.isp.link(self.ispScaleNode.inputImage)
-                    # self.ispScaleNode.out.link(self.xoutIsp.input)
-                    spatialDetectionNetwork.passthroughDepth.link(self.depthScaleNode.inputImage)
-                    self.depthScaleNode.out.link(self.xoutDepth.input)
-            else:
-                self.camRgb.isp.link(self.xoutRgb.input)
-                sizeForIntrinsic = self.camRgb.getIspSize()
-                self.stereo.depth.link(self.xoutDepth.input)
-                # if scaleFactor == 1:
-                #     self.camRgb.isp.link(self.xoutIsp.input)
-                # else:
-                #     self.camRgb.isp.link(self.ispScaleNode.inputImage)
-                #     self.ispScaleNode.out.link(self.xoutIsp.input)
-
-            # self.xoutIsp.setStreamName("isp")
+                if scaleFactor != 1:
+                    spatialDetectionNetwork.passthroughDepth.link(
+                        self.depthScaleNode.inputImage
+                    )
+                    # depthScaleNode.out will be read by host via createOutputQueue in startPipeline
         else:
-            self.camRgb.isp.link(self.xoutRgb.input) # If not using a NN then link the camera output directly to the xLink rgb output node
+            # No depth: use preview/isp outputs directly
+            if spatialDetectionNetwork is not None:
+                self.camRgb.preview.link(spatialDetectionNetwork.input)
+
             sizeForIntrinsic = self.camRgb.getIspSize()
             if spatialDetectionNetwork is not None:
-                self.camRgb.preview.link(spatialDetectionNetwork.input) # Link camera's preview output to the input of the NN node
-                spatialDetectionNetwork.out.link(self.xoutNN.input) # Link NN output to the xLink detections output node
+                self.camRgb.preview.link(
+                    spatialDetectionNetwork.input
+                )  # Link camera's preview output to the input of the NN node
 
-        self.device = dai.Device(self.pipeline, self.devInfo)
+        self.device = self.pipeline.start()
 
-        self.cameraIntrinsics = self.device.readCalibration().getCameraIntrinsics(dai.CameraBoardSocket.CAM_A, sizeForIntrinsic[0], sizeForIntrinsic[1])
-        
+        self.cameraIntrinsics = self.device.readCalibration().getCameraIntrinsics(
+            dai.CameraBoardSocket.CAM_A, sizeForIntrinsic[0], sizeForIntrinsic[1]
+        )
+
         return
-    
 
     def serializePipeline(self):
         serialized = self.pipeline.serializeToJson()
@@ -294,13 +298,18 @@ class CameraPipeline:
         self.lastFrameTime = time.time_ns() / 1.0e9
         self.fps = 0
 
-        if self.NN_FILE is not None:
-            detectionNNQueue = self.device.getOutputQueue(name="detections", maxSize=4, blocking=False) # Get the NN data from the queue
-            self.queues.append((detectionNNQueue, "detectionNN"))
+        if (
+            self.NN_FILE is not None
+            and getattr(self, "spatialDetectionNetwork", None) is not None
+        ):
+            nnQueue = self.spatialDetectionNetwork.out.createOutputQueue(
+                maxSize=4, blocking=False
+            )
+            self.queues.append((nnQueue, "detectionNN"))
 
         # For now, RGB needs fixed focus to properly align with depth.
         # This value was used during calibration
-            # Try to calibrate the camera
+        # Try to calibrate the camera
         if self.hasDepth:
             try:
                 self.calibData = self.device.readCalibration2()
@@ -313,21 +322,25 @@ class CameraPipeline:
                 pass
 
             # Output queues will be used to get the rgb frames and nn data from the outputs defined above
-            previewQueue = self.device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
+            previewQueue = self.camRgb.preview.createOutputQueue(
+                maxSize=4, blocking=False
+            )
             self.queues.append((previewQueue, "preview"))
 
-            depthQueue = self.device.getOutputQueue(name="depth", maxSize=4, blocking=False)
+            depthQueue = self.stereo.depth.createOutputQueue(maxSize=4, blocking=False)
             self.queues.append((depthQueue, "depth"))
 
-            # ispQueue = self.device.getOutputQueue(name="isp", maxSize=4, blocking=False)
+            # ispQueue = self.device.output.createOutputQueue(name="isp", maxSize=4, blocking=False)
             # self.queues.append((ispQueue, "isp"))
 
             if self.hasLaser:
-                if not self.device.setIrLaserDotProjectorBrightness(cm.frcConfig.LaserDotProjectorCurrent):
+                if not self.device.setIrLaserDotProjectorBrightness(
+                    cm.frcConfig.LaserDotProjectorCurrent
+                ):
                     print("Projector Fail")
 
         else:
-            rgbQueue = self.device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
+            rgbQueue = self.camRgb.isp.createOutputQueue(maxSize=4, blocking=False)
             self.queues.append((rgbQueue, "rgb"))
 
         # # Start the pipeline
@@ -343,30 +356,31 @@ class CameraPipeline:
                 match name:
                     case "preview":
                         self.frame = q.get().getCvFrame()
-                        #print("Preview:", self.frame.shape)
+                        # print("Preview:", self.frame.shape)
                     case "depth":
                         self.depthFrame = q.get().getFrame()
-                        #print("depth")
+                        # print("depth")
                         depthChanged = True
                     case "isp":
-                        q.get().getCvFrame()            # TODO get rid of this completely
+                        q.get().getCvFrame()  # TODO get rid of this completely
                     case "rgb":
                         self.frame = q.get().getCvFrame()
-                        #print("RGB:", self.frame.shape)
+                        # print("RGB:", self.frame.shape)
                     case "detectionNN":
                         self.detections = q.get().detections
-        
+
         if anyChanges:
             now = time.time_ns() / 1.0e9
-            self.fps = int(1/(now - self.lastFrameTime))
+            self.fps = int(1 / (now - self.lastFrameTime))
             self.lastFrameTime = now
 
-
-
         if depthChanged:
-            self.depthFrameColor = cv2.normalize(self.depthFrame, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
+            self.depthFrameColor = cv2.normalize(
+                self.depthFrame, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1
+            )
             self.depthFrameColor = cv2.equalizeHist(self.depthFrameColor)
-            self.depthFrameColor = cv2.applyColorMap(self.depthFrameColor, cv2.COLORMAP_RAINBOW)
+            self.depthFrameColor = cv2.applyColorMap(
+                self.depthFrameColor, cv2.COLORMAP_RAINBOW
+            )
 
         return anyChanges
-    

@@ -10,3 +10,4 @@ models
 models/
 _models
 _models/
+.venv

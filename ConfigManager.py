@@ -1,24 +1,22 @@
 import json
 import sys
 
-ROMI_FILE = "/boot/romi.json"   # used when running on a Romi robot
-FRC_FILE = "/boot/frc.json"     # Some camera settings incuding laser power
-NN_FILE = "/boot/nn.json"       # NN config file
-MV_FILE = "/boot/mv.json"       # MonsterVision Configuration file
-
-
-
+ROMI_FILE = "/boot/romi.json"  # used when running on a Romi robot
+FRC_FILE = "/boot/frc.json"  # Some camera settings incuding laser power
+NN_FILE = "/boot/nn.json"  # NN config file
+MV_FILE = "/boot/mv.json"  # MonsterVision Configuration file
 
 
 # The purpase a ComputedValue object is to allow the value to be set in the ConfigManager class
 # and then read in the derived class.  This is a way to get around the fact that Python does not
 # have pointers.  The value in the ComputedValue object is set in the ConfigManager class and then
-# read in the derived class. 
+# read in the derived class.
 
 
 class ComputedValue:
     def __init__(self, value):
         self.value = value
+
 
 # ConfigManager is a class that reads a JSON file and sets the values of a set of variables
 
@@ -30,11 +28,9 @@ class ComputedValue:
 #   mess: a ComputedValue object that will be set to a message if the value is not found in the JSON file
 
 
-
-
 class ConfigManager:
 
-    def __init__(self, file: str, configTable, drillDown : str = None):
+    def __init__(self, file: str, configTable, drillDown: str = None):
         self.file = file
         self.success = False
 
@@ -43,21 +39,23 @@ class ConfigManager:
                 j = json.load(f)
         except OSError as err:
             raise Exception("could not open '{}': {}".format(self.file, err))
-        
+
         # top level must be an object
         if not isinstance(j, dict):
             raise Exception("must be JSON object")
 
         if drillDown is not None:
             j = j[drillDown]
-        
+
         for entry in configTable:
-       
+
             try:
-                entry['value'].value = j[entry['name']]
+                entry["value"].value = j[entry["name"]]
             except:
-                if entry['mess'] is not None:
-                    raise Exception("config error in '" + self.file + "': " + entry['mess'].value)
+                if entry["mess"] is not None:
+                    raise Exception(
+                        "config error in '" + self.file + "': " + entry["mess"].value
+                    )
                 pass
 
         self.success = True
@@ -66,7 +64,7 @@ class ConfigManager:
 # Derive a new class from ConfigManager
 
 
-class FRCConfig (ConfigManager):
+class FRCConfig(ConfigManager):
 
     __team = ComputedValue(0)
     __hasDisplay = ComputedValue(False)
@@ -74,14 +72,18 @@ class FRCConfig (ConfigManager):
     __LaserDotProjectorCurrent = ComputedValue(0)
 
     __table = [
-        { "name" : "team", "value" : __team, "mess" : "Could not read team number"},
-        { "name" : "hasDisplay", "value" : __hasDisplay, "mess" : None},
-        { "name" : "ntmode", "value" : __ntmode, "mess" : None},
-        { "name" : "LaserDotProjectorCurrent", "value" : __LaserDotProjectorCurrent, "mess" : None}
+        {"name": "team", "value": __team, "mess": "Could not read team number"},
+        {"name": "hasDisplay", "value": __hasDisplay, "mess": None},
+        {"name": "ntmode", "value": __ntmode, "mess": None},
+        {
+            "name": "LaserDotProjectorCurrent",
+            "value": __LaserDotProjectorCurrent,
+            "mess": None,
+        },
     ]
 
     def __init__(self, file: str):
-        super().__init__( file, self.__table)
+        super().__init__(file, self.__table)
 
         if self.success:
             if self.__ntmode.value == "client":
@@ -90,12 +92,13 @@ class FRCConfig (ConfigManager):
                 self.server = True
             else:
                 success = False
-                raise Exception(f"could not understand ntmode value '{self.__ntmode.value}'")
+                raise Exception(
+                    f"could not understand ntmode value '{self.__ntmode.value}'"
+                )
             self.team = self.__team.value
             self.hasDisplay = self.__hasDisplay.value
             self.LaserDotProjectorCurrent = self.__LaserDotProjectorCurrent.value * 1.0
 
-            
 
 class NNConfig(ConfigManager):
 
@@ -104,20 +107,19 @@ class NNConfig(ConfigManager):
     __NNFamily = ComputedValue("")
 
     __table = [
-        { "name" : "bb_fraction", "value" : __bb_fraction, "mess" : None},
-        { "name" : "input_size", "value" : __inputSize, "mess" : None},
-        { "name" : "NN_family", "value" : __NNFamily, "mess" : None}
+        {"name": "bb_fraction", "value": __bb_fraction, "mess": None},
+        {"name": "input_size", "value": __inputSize, "mess": None},
+        {"name": "NN_family", "value": __NNFamily, "mess": None},
     ]
 
     def __init__(self, file: str):
-        super().__init__( file, self.__table, "nn_config")
+        super().__init__(file, self.__table, "nn_config")
 
         if self.success:
             self.bb_fraction = self.__bb_fraction.value
-            self.inputSize = tuple(map(int, self.__inputSize.value.split('x')))
+            self.inputSize = tuple(map(int, self.__inputSize.value.split("x")))
             self.NNFamily = self.__NNFamily.value
 
-    
 
 class MVConfig(ConfigManager):
 
@@ -131,21 +133,20 @@ class MVConfig(ConfigManager):
     __cameras = ComputedValue([])
     __showPreview = ComputedValue(False)
 
-
     __table = [
-        { "name" : "cameras", "value" : __cameras, "mess" : None},
-        { "name" : "tagFamily", "value" : __tagFamily, "mess" : None},
-        { "name" : "tagSize", "value" : __tagSize, "mess" : None},
-        { "name" : "CAMERA_FPS", "value" : __CAMERA_FPS, "mess" : None},
-        { "name" : "DS_SUBSAMPLING", "value" : __DS_SUBSAMPLING, "mess" : None},
-        { "name" : "PREVIEW_WIDTH", "value" : __PREVIEW_WIDTH, "mess" : None},
-        { "name" : "PREVIEW_HEIGHT", "value" : __PREVIEW_HEIGHT, "mess" : None},
-        { "name" : "DS_SCALE", "value" : __DS_SCALE, "mess" : None},
-        { "name" : "showPreview", "value" : __showPreview, "mess" : None}
+        {"name": "cameras", "value": __cameras, "mess": None},
+        {"name": "tagFamily", "value": __tagFamily, "mess": None},
+        {"name": "tagSize", "value": __tagSize, "mess": None},
+        {"name": "CAMERA_FPS", "value": __CAMERA_FPS, "mess": None},
+        {"name": "DS_SUBSAMPLING", "value": __DS_SUBSAMPLING, "mess": None},
+        {"name": "PREVIEW_WIDTH", "value": __PREVIEW_WIDTH, "mess": None},
+        {"name": "PREVIEW_HEIGHT", "value": __PREVIEW_HEIGHT, "mess": None},
+        {"name": "DS_SCALE", "value": __DS_SCALE, "mess": None},
+        {"name": "showPreview", "value": __showPreview, "mess": None},
     ]
 
     def __init__(self, file: str):
-        super().__init__( file, self.__table)
+        super().__init__(file, self.__table)
 
         if self.success:
             self.cameras = self.__cameras.value
@@ -160,11 +161,11 @@ class MVConfig(ConfigManager):
 
     def getCamera(self, mxid) -> dict:
         for cam in self.cameras:
-            if cam['mxid'] == mxid:
+            if cam["mxid"] == mxid:
                 return cam
         print(f"CAMERA MXID({mxid}) NOT FOUND IN mv.json")
         return None
-    
+
 
 frcConfig = FRCConfig(FRC_FILE)
 mvConfig = MVConfig(MV_FILE)

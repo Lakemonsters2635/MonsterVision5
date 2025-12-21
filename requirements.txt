@@ -1,1 +1,10 @@
-depthai
+depthai==3.2.1
+msvc_runtime==14.44.35112
+numpy==2.3.5
+opencv-python==4.12.0.88
+robotpy-apriltag==2025.3.2.3
+robotpy-native-apriltag==2025.3.2
+robotpy-native-wpimath==2025.3.2
+robotpy-native-wpiutil==2025.3.2
+robotpy-wpimath==2025.3.2.3
+robotpy-wpiutil==2025.3.2.3
