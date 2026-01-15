@@ -6,3 +6,5 @@ models/*
 .tmp
 .DS_Store
 uneditedObjects/*
+datagenTraining/
+finalProduct/
