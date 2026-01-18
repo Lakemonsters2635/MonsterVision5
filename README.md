@@ -3,7 +3,7 @@
 This should run on RPI5. No testing done on RPI4 yet
 
 ## Illustration for Pi setup:
-<img width="526" height="333" alt="VisionHardware" src="visionHardware.png"/>
+<img width="1000" height="600" alt="VisionHardware" src="visionHardware.png"/>
 
 ## How to set up Raspberry Pi 5 with WPILibPi and MonsterVision5 (FOR SETUP ON ROBOT)
 1. Starting on your local machine (NOT THE PI), run `git clone https://github.com/Lakemonsters2635/MonsterVision5.git`
