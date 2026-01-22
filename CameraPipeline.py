@@ -137,9 +137,9 @@ class CameraPipeline:
         family = nnConfig["NN_family"]
         if family == "mobilenet":
             if self.hasDepth:
-                detectionNodeType = dai.node.MobileNetSpatialDetectionNetwork
+                detectionNodeType = dai.node.MobileNetSpatialDetectionNetwork # TODO: removed in v3 ???
             else:
-                detectionNodeType = dai.node.MobileNetDetectionNetwork
+                detectionNodeType = dai.node.MobileNetDetectionNetwork # TODO: removed in v3 ???
         elif family == "YOLO":
             if self.hasDepth:
                 detectionNodeType = dai.node.YoloSpatialDetectionNetwork
@@ -160,6 +160,7 @@ class CameraPipeline:
         # Set the NN-specific stuff
 
         if family == "YOLO":
+            print(spatialDetectionNetwork.getClasses())
             spatialDetectionNetwork.setNumClasses(
                 nnConfig["NN_specific_metadata"]["classes"]
             )

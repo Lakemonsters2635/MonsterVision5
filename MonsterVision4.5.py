@@ -15,7 +15,7 @@ import ConfigManager as cm
 
 def printDeviceInfo(devInfo: dai.DeviceInfo):
     """Prints information about the camera and returns camera intrinsics"""
-    mxId = devInfo.getMxId()
+    mxId = devInfo.getDeviceId()
 
     # Use a short-lived device to probe information (v3 guidance)
     try:
@@ -64,7 +64,7 @@ def profile():
         for deviceInfo in deviceInfos:
             deviceInfo: dai.DeviceInfo  # Give deviceInfo a type
 
-            mxId = deviceInfo.getMxId()  # Get the cameraID (mxID) from the deviceInfo
+            mxId = deviceInfo.getDeviceId()  # Get the cameraID (mxID) from the deviceInfo
             cameraIntrinsics = printDeviceInfo(
                 deviceInfo
             )  # Call the function to print out this info
